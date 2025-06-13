@@ -15,7 +15,7 @@ header:
 footer:
  name: "Hey there, my name is Matt"
  bio: "I am a developer and a tech aficionado from the United Kingdom. Photography and capturing the moment is one of my hobbies."
- github: "<a href=\"https://github.com/ramswaroop/photography\">fork this repo on github</a> ;)"
+ github: "<a href=\"https://github.com/ramswaroop/photography\">fork this repo on github</a>."
 web_design: "ME"
 # Configure which exif data to display
 # Tag is the actual exif tag, icon is a fontawesome icon. Use JSON notation without line breaks
@@ -23,6 +23,6 @@ exif: '[{"tag": "Model", "icon": "camera-retro"}, {"tag": "FNumber", "icon": "do
 social_urls:
   twitter: "https://www.twitter.com/add1ct3dd"
   instagram: "https://www.instagram.com/add1ct3dd"
-  dribbble: "https://dribbble.com/add1ct3dd"
-  linkedin: "https://in.linkedin.com/in/add1ct3dd"
+  # dribbble: "https://dribbble.com/add1ct3dd"
+  # linkedin: "https://in.linkedin.com/in/add1ct3dd"
   github: "https://www.github.com/add1ct3dd"
