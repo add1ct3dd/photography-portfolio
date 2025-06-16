@@ -1,5 +1,5 @@
 # Base configs
-baseurl: "https://matthew-evans.com"
+baseurl: "" # "https://matthew-evans.com"
 #baseurl: "" # Comment the above line and uncomment this to test the website locally
 image_fulls_loc: "/images/fulls"
 image_thumbs_loc: "/images/thumbs"
@@ -14,12 +14,12 @@ header:
  subtitle: "by Matthew Evans"
 footer:
  name: "About Me"
- bio: "I am a developer and a tech aficionado from the United Kingdom. Photography and capturing the moment is one of my hobbies. Here's a selection of a few of my favourite photos, with so many more on my Flickr."
+ bio: "I am a developer and a tech aficionado from the United Kingdom. Here's a selection of a few of my favourite photos, with so many more on my Flickr."
  github: "<a href=\"https://github.com/ramswaroop/photography\">fork this repo on github</a>."
 web_design: "ME"
 # Configure which exif data to display
 # Tag is the actual exif tag, icon is a fontawesome icon. Use JSON notation without line breaks
-exif: '[{"tag": "Model", "icon": "camera-retro"}, {"tag": "LensModel", "icon": "video-camera"}, {"tag": "FNumber", "icon": "dot-circle-o"}, {"tag": "FocalLength", "icon": "signal"}, {"tag": "ExposureTime", "icon": "clock-o"}, {"tag": "ISOSpeedRatings", "icon": "info-circle"}]'
+exif: '[{"tag": "Model", "icon": "camera-retro"}, {"tag": "LensModel", "icon": "video"}, {"tag": "FNumber", "icon": "dot-circle"}, {"tag": "FocalLength", "icon": "signal"}, {"tag": "ExposureTime", "icon": "clock"}, {"tag": "ISOSpeedRatings", "icon": "info-circle"}]'
 social_urls:
   twitter: "https://www.twitter.com/add1ct3dd"
   instagram: "https://www.instagram.com/add1ct3dd"
