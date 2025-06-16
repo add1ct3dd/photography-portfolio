@@ -263,7 +263,7 @@
 		}
 
             var flickrImgUrl = img['src'].split('_')[0].split('/images/thumbs/')[1];
-            template += '<a target="_blank" style="float:right;" href="https://flickr.com/photos/matthew-evans/' + flickrImgUrl + '/"><i class="fa fa-flickr"></i> View on Flickr</a>';
+            template += '<a target="_blank" style="float:right;" href="https://flickr.com/photos/matthew-evans/' + flickrImgUrl + '/"><i class="fab fa-flickr"></i> View on Flickr</a>';
             
 		return template;
 	}
