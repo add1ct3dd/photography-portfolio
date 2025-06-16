@@ -1,30 +1,29 @@
 # Base configs
-baseurl: "https://photography.rampatra.com"
+baseurl: "" # "https://matthew-evans.com"
 #baseurl: "" # Comment the above line and uncomment this to test the website locally
 image_fulls_loc: "/images/fulls"
 image_thumbs_loc: "/images/thumbs"
-google_analytics: "UA-46465113-2"
+google_analytics: "G-Y1MLKS6G5P"
 
 # UI configs
-title: "Photography by Ram Patra"
+title: "Photography by Matthew Evans"
 subtitle: "See the world through my eyes!"
-author: "Ram Patra"
+author: "Matthew Evans"
 header:
  title: "Photography"
- subtitle: "by Ram Patra"
+ subtitle: "by Matthew Evans"
 footer:
- name: "Hey there, my name is Ram"
- bio: "I am a developer and a tech aficionado from India. Love making teeny tiny apps solving tiny problems in life and now learning photography."
- github: "Want a website like this for yourself for free? Just <a href=\"https://github.com/ramswaroop/photography\">fork this repo on github</a> ;)"
-web_design: "AJ"
-
-social_urls:
-  twitter: "https://www.twitter.com/ram__patra"
-  instagram: "https://www.instagram.com/ram_patra"
-  dribbble: "https://dribbble.com/rampatra"
-  linkedin: "https://in.linkedin.com/in/ram-patra"
-  github: "https://www.github.com/rampatra"
-
+ name: "About Me"
+ bio: "I am a developer and a tech aficionado from the United Kingdom. Here's a selection of a few of my favourite photos, with so many more on my Flickr."
+ github: "<a href=\"https://github.com/ramswaroop/photography\">fork this repo on github</a>."
+web_design: "ME"
 # Configure which exif data to display
 # Tag is the actual exif tag, icon is a fontawesome icon. Use JSON notation without line breaks
-exif: '[{"tag": "Model", "icon": "fa fa-camera-retro"}, {"tag": "FNumber", "icon": "far fa-dot-circle"}, {"tag": "ExposureTime", "icon": "far fa-clock"}, {"tag": "ISOSpeedRatings", "icon": "fa fa-info-circle"}]'
+exif: '[{"tag": "Model", "icon": "camera-retro"}, {"tag": "LensModel", "icon": "video"}, {"tag": "FNumber", "icon": "dot-circle"}, {"tag": "FocalLength", "icon": "signal"}, {"tag": "ExposureTime", "icon": "clock"}, {"tag": "ISOSpeedRatings", "icon": "info-circle"}]'
+social_urls:
+  twitter: "https://www.twitter.com/add1ct3dd"
+  instagram: "https://www.instagram.com/add1ct3dd"
+  # dribbble: "https://dribbble.com/add1ct3dd"
+  # linkedin: "https://in.linkedin.com/in/add1ct3dd"
+  github: "https://www.github.com/add1ct3dd"
+  flickr: "https://www.flickr.com/people/matthew-evans"

@@ -257,9 +257,14 @@
 			var current_data = exif[current];
 			var exif_data = EXIF.getTag(img, current_data['tag']);
 			if (typeof exif_data !== "undefined") {
-				template += '<i class="' + current_data['icon'] + '" aria-hidden="true"></i> ' + exif_data + '&nbsp;&nbsp;';
+                    template += '<span title="' + current_data['tag'].split(/(?=[A-Z])/).join(" ") + ": " +  exif_data +'"><i class="fa fa-' + current_data['icon'] + '" aria-hidden="true"></i> ' + exif_data + '</span>&nbsp;&nbsp;';
+                    if (current_data['tag'] === "LensModel") { template += "</br>"; }
 			}
 		}
+
+            var flickrImgUrl = img['src'].split('_')[0].split('/images/thumbs/')[1];
+            template += '<a target="_blank" style="float:right;" href="https://flickr.com/photos/matthew-evans/' + flickrImgUrl + '/"><i class="fa fa-flickr"></i> View on Flickr</a>';
+            
 		return template;
 	}
 

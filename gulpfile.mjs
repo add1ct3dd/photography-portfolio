@@ -17,12 +17,12 @@ gulp.task('delete', function () {
 gulp.task('resize-images', function () {
     return gulp.src('images/*.*')
         .pipe(imageResize({
-            width: 1024,
+            width: 3440,
             imageMagick: true
         }))
         .pipe(gulp.dest('images/fulls'))
         .pipe(imageResize({
-            width: 512,
+            width: 840,
             imageMagick: true
         }))
         .pipe(gulp.dest('images/thumbs'));
