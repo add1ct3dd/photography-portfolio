@@ -65,7 +65,7 @@ gulp.task('minify-js', function () {
 gulp.task('build', gulp.series('sass', 'minify-js'));
 
 // resize images
-gulp.task('resize', gulp.series('delete', 'resize-images'));
+gulp.task('resize', gulp.series('resize-images', 'delete'));
 
 // default task
 gulp.task('default', gulp.series('build', 'resize'));
