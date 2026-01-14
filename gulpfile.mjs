@@ -1,12 +1,14 @@
 import gulp from 'gulp';
-import imageResize from 'gulp-image-resize';
-import dartSass from 'sass';
+import sharp from 'sharp';
+import * as dartSass from 'sass';
 import gulpSass from 'gulp-sass';
 import uglify from 'gulp-uglify';
 import rename from 'gulp-rename';
 import filter from 'gulp-filter';
 import path from 'path';
 import del from 'del';
+import fs from 'fs';
+import { promises as fsPromises } from 'fs';
 
 const sass = gulpSass(dartSass);
 
@@ -14,18 +16,42 @@ gulp.task('delete', function () {
     return del(['images/*.*']);
 });
 
-gulp.task('resize-images', function () {
-    return gulp.src('images/*.*')
-        .pipe(imageResize({
-            width: 3440,
-            imageMagick: true
-        }))
-        .pipe(gulp.dest('images/fulls'))
-        .pipe(imageResize({
-            width: 840,
-            imageMagick: true
-        }))
-        .pipe(gulp.dest('images/thumbs'));
+gulp.task('resize-images', async function () {
+    const imageDir = 'images';
+    const fullsDir = 'images/fulls';
+    const thumbsDir = 'images/thumbs';
+    
+    // Ensure output directories exist
+    await fsPromises.mkdir(fullsDir, { recursive: true });
+    await fsPromises.mkdir(thumbsDir, { recursive: true });
+    
+    // Get all image files
+    const files = await fsPromises.readdir(imageDir);
+    const imageFiles = files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f));
+    
+    for (const file of imageFiles) {
+        const inputPath = path.join(imageDir, file);
+        const fullOutputPath = path.join(fullsDir, file);
+        const thumbOutputPath = path.join(thumbsDir, file);
+        
+        try {
+            // Resize for fulls - high quality (92)
+            await sharp(inputPath)
+                .resize(3440, null, { withoutEnlargement: true })
+                .jpeg({ quality: 92, progressive: true })
+                .toFile(fullOutputPath);
+            
+            // Resize for thumbs - good quality (85)
+            await sharp(inputPath)
+                .resize(840, null, { withoutEnlargement: true })
+                .jpeg({ quality: 85, progressive: true })
+                .toFile(thumbOutputPath);
+                
+            console.log(`Resized: ${file}`);
+        } catch (err) {
+            console.error(`Error resizing ${file}:`, err.message);
+        }
+    }
 });
 
 // compile scss to css
@@ -49,7 +75,7 @@ gulp.task('minify-js', function () {
         .pipe(filter(function (file) {
             const filePath = file.path;
             const basename = path.basename(filePath, '.js');
-            
+
             // Skip files that are already minified
             return !basename.endsWith('.min');
         }))
