@@ -35,15 +35,17 @@ gulp.task('resize-images', async function () {
         const thumbOutputPath = path.join(thumbsDir, file);
         
         try {
-            // Resize for fulls - high quality (92)
+            // Resize for fulls - high quality (92) with metadata preserved
             await sharp(inputPath)
                 .resize(3440, null, { withoutEnlargement: true })
+                .withMetadata()
                 .jpeg({ quality: 92, progressive: true })
                 .toFile(fullOutputPath);
             
-            // Resize for thumbs - good quality (85)
+            // Resize for thumbs - good quality (85) with metadata preserved
             await sharp(inputPath)
                 .resize(840, null, { withoutEnlargement: true })
+                .withMetadata()
                 .jpeg({ quality: 85, progressive: true })
                 .toFile(thumbOutputPath);
                 
