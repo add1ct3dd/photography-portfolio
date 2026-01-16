@@ -1,0 +1,51 @@
+{
+  "name": "photography",
+  "version": "5.0.0",
+  "description": "A jekyll website for photographer cum developer",
+  "main": "npmfile.js",
+  "scripts": {
+    "build": "npm run build:css && jekyll build",
+    "build:css": "gulp build",
+    "watch": "gulp sass:watch",
+    "resize": "gulp resize",
+    "serve": "jekyll serve",
+    "dev": "npm run build:css && concurrently \"npm run watch\" \"npm run serve\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rampatra/photography.git"
+  },
+  "keywords": [
+    "photography",
+    "jekyll",
+    "website",
+    "template",
+    "website template",
+    "portfolio",
+    "portfolio website"
+  ],
+  "author": "Ram Patra",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/rampatra/photography/issues"
+  },
+  "homepage": "https://github.com/rampatra/photography#readme",
+  "devDependencies": {
+    "@eslint/js": "^9.37.0",
+    "concurrently": "^8.2.2",
+    "del": "^4.1.1",
+    "eslint": "^9.37.0",
+    "globals": "^16.4.0",
+    "gulp": "^4.0.2",
+    "gulp-filter": "^9.0.1",
+    "gulp-rename": "^1.4.0",
+    "gulp-sass": "^5.0.0",
+    "gulp-uglify": "^3.0.0",
+    "prettier": "^3.6.2",
+    "sass": "^1.25.0"
+  },
+  "dependencies": {
+    "sharp": "^0.34.5"
+  }
+}
