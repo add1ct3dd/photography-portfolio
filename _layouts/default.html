@@ -1,24 +1,15 @@
----
-layout: compress
-compress_html:
-  clippings: all
-  comments: ["<!-- ", " -->"]
-  endings: all
-  ignore:
-    envs: [local]
-  blanklines: false
-  profile: true
-  startings: [html, head, body]
----
 <!DOCTYPE HTML>
 <html>
+
 <head>
-    {% include header.html %}
+  {% include header.html %}
 </head>
+
 <body class="is-preload">
 
-    {{ content }}
-    
-    {% include footer.html %}
+  {{ content }}
+
+  {% include footer.html %}
 </body>
+
 </html>

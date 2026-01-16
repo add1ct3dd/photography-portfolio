@@ -584,6 +584,11 @@
 								e.stopPropagation();
 							});
 
+							// Prevent closing when clicking on the caption itself
+							$caption.on('click', function(e) {
+								e.stopPropagation();
+							});
+
 							$popup
 								.css('cursor', 'pointer')
 								.on('click', function(e) {

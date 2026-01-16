@@ -20,20 +20,20 @@ gulp.task('resize-images', async function () {
     const imageDir = 'images';
     const fullsDir = 'images/fulls';
     const thumbsDir = 'images/thumbs';
-    
+
     // Ensure output directories exist
     await fsPromises.mkdir(fullsDir, { recursive: true });
     await fsPromises.mkdir(thumbsDir, { recursive: true });
-    
+
     // Get all image files
     const files = await fsPromises.readdir(imageDir);
     const imageFiles = files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f));
-    
+
     for (const file of imageFiles) {
         const inputPath = path.join(imageDir, file);
         const fullOutputPath = path.join(fullsDir, file);
         const thumbOutputPath = path.join(thumbsDir, file);
-        
+
         try {
             // Resize for fulls - high quality (92) with metadata preserved
             await sharp(inputPath)
@@ -41,14 +41,14 @@ gulp.task('resize-images', async function () {
                 .withMetadata()
                 .jpeg({ quality: 92, progressive: true })
                 .toFile(fullOutputPath);
-            
+
             // Resize for thumbs - good quality (85) with metadata preserved
             await sharp(inputPath)
                 .resize(840, null, { withoutEnlargement: true })
                 .withMetadata()
                 .jpeg({ quality: 85, progressive: true })
                 .toFile(thumbOutputPath);
-                
+
             console.log(`Resized: ${file}`);
         } catch (err) {
             console.error(`Error resizing ${file}:`, err.message);
