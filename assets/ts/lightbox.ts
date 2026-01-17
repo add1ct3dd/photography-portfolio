@@ -33,6 +33,7 @@ class DialogLightbox {
   private isPinching: boolean = false;
   private lastTouchX: number = 0;
   private lastTouchY: number = 0;
+  private maxZoom: number = 16; // Default, will be calculated based on image size
 
   constructor(private selector: string) {
     this.init();
@@ -153,7 +154,7 @@ class DialogLightbox {
         e.stopPropagation();
         const currentDistance = this.getTouchDistance(e.touches);
         const scale = (currentDistance / this.initialDistance) * this.lastScale;
-        this.currentScale = Math.min(Math.max(scale, 1), 8); // Limit zoom 1x-8x
+        this.currentScale = Math.min(Math.max(scale, 1), this.maxZoom);
         this.applyTransform(image);
       } else if (e.touches.length === 1 && this.currentScale > 1) {
         // Pan when zoomed in
@@ -196,7 +197,7 @@ class DialogLightbox {
         e.preventDefault();
         const gestureEvent = e as unknown as { scale: number };
         const newScale = this.lastScale * gestureEvent.scale;
-        this.currentScale = Math.min(Math.max(newScale, 1), 8);
+        this.currentScale = Math.min(Math.max(newScale, 1), this.maxZoom);
         this.applyTransform(image);
       }, { passive: false });
 
@@ -257,8 +258,8 @@ class DialogLightbox {
     // Calculate effective display size based on zoom level
     // When zoomed to 2x, we need 2x the pixels for sharp display
     const baseSize = window.innerWidth <= 768 ? 95 : 90;
-    const effectiveSize = Math.min(baseSize * this.currentScale, 100 * 8); // Cap at 8x viewport
-    
+    const effectiveSize = Math.min(baseSize * this.currentScale, 100 * this.maxZoom); // Cap at maxZoom x viewport
+
     // Update sizes to tell browser to load higher resolution
     image.sizes = `${effectiveSize}vw`;
   }
@@ -375,6 +376,18 @@ class DialogLightbox {
         // Adjust dialog size to fit the image
         this.adjustDialogSize(imageElement);
 
+        // Calculate max zoom to allow 1:1 pixel viewing
+        // Based on how much we'd need to scale up to show actual pixels
+        const displayWidth = imageElement.clientWidth || window.innerWidth * 0.95;
+        const displayHeight = imageElement.clientHeight || window.innerHeight * 0.8;
+        const naturalWidth = imageElement.naturalWidth || 3440;
+        const naturalHeight = imageElement.naturalHeight || 1440;
+        
+        // Max zoom needed for 1:1 viewing is the larger ratio of natural/display dimensions
+        const zoomForWidth = naturalWidth / displayWidth;
+        const zoomForHeight = naturalHeight / displayHeight;
+        this.maxZoom = Math.max(zoomForWidth, zoomForHeight, 1);
+        
         // Fade in the image smoothly
         requestAnimationFrame(() => {
           imageElement.style.opacity = "1";

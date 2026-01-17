@@ -18,6 +18,7 @@ class DialogLightbox {
         this.isPinching = false;
         this.lastTouchX = 0;
         this.lastTouchY = 0;
+        this.maxZoom = 16;
         this.init();
     }
     init() {
@@ -101,7 +102,7 @@ class DialogLightbox {
                 e.stopPropagation();
                 const currentDistance = this.getTouchDistance(e.touches);
                 const scale = (currentDistance / this.initialDistance) * this.lastScale;
-                this.currentScale = Math.min(Math.max(scale, 1), 8);
+                this.currentScale = Math.min(Math.max(scale, 1), this.maxZoom);
                 this.applyTransform(image);
             }
             else if (e.touches.length === 1 && this.currentScale > 1) {
@@ -136,7 +137,7 @@ class DialogLightbox {
                 e.preventDefault();
                 const gestureEvent = e;
                 const newScale = this.lastScale * gestureEvent.scale;
-                this.currentScale = Math.min(Math.max(newScale, 1), 8);
+                this.currentScale = Math.min(Math.max(newScale, 1), this.maxZoom);
                 this.applyTransform(image);
             }, { passive: false });
             imageContainer.addEventListener("gestureend", () => {
@@ -183,7 +184,7 @@ class DialogLightbox {
     }
     updateImageSizesForZoom(image) {
         const baseSize = window.innerWidth <= 768 ? 95 : 90;
-        const effectiveSize = Math.min(baseSize * this.currentScale, 100 * 8);
+        const effectiveSize = Math.min(baseSize * this.currentScale, 100 * this.maxZoom);
         image.sizes = `${effectiveSize}vw`;
     }
     resetZoom(image) {
@@ -268,6 +269,13 @@ class DialogLightbox {
             imageElement.decoding = "async";
             imageElement.onload = () => {
                 this.adjustDialogSize(imageElement);
+                const displayWidth = imageElement.clientWidth || window.innerWidth * 0.95;
+                const displayHeight = imageElement.clientHeight || window.innerHeight * 0.8;
+                const naturalWidth = imageElement.naturalWidth || 3440;
+                const naturalHeight = imageElement.naturalHeight || 1440;
+                const zoomForWidth = naturalWidth / displayWidth;
+                const zoomForHeight = naturalHeight / displayHeight;
+                this.maxZoom = Math.max(zoomForWidth, zoomForHeight, 1);
                 requestAnimationFrame(() => {
                     imageElement.style.opacity = "1";
                 });

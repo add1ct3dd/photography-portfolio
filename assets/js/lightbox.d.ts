@@ -25,6 +25,7 @@ declare class DialogLightbox {
     private isPinching;
     private lastTouchX;
     private lastTouchY;
+    private maxZoom;
     constructor(selector: string);
     private init;
     private createDialog;
