@@ -48,7 +48,7 @@ function initBrowserDetection(): void {
   const ua = navigator.userAgent;
   
   // Detect browser from UA (fallback for older detection needs)
-  const browserPatterns = [
+  const browserPatterns: Array<[string, RegExp]> = [
     ['firefox', /Firefox\/([0-9\.]+)/],
     ['opera', /OPR\/([0-9\.]+)/],
     ['edge', /Edg(?:e)?\/([0-9\.]+)/],
@@ -58,7 +58,7 @@ function initBrowserDetection(): void {
   ];
 
   for (const [name, pattern] of browserPatterns) {
-    const match = ua.match(pattern as RegExp);
+    const match = ua.match(pattern);
     if (match) {
       browser.name = name;
       browser.version = parseFloat(match[1] || match[2] || '0');
@@ -71,7 +71,7 @@ function initBrowserDetection(): void {
   }
 
   // Detect OS
-  const osPatterns = [
+  const osPatterns: Array<[string, RegExp]> = [
     ['ios', /iPhone|iPad|iPod/],
     ['android', /Android/],
     ['mac', /Macintosh|Mac OS X/],
@@ -80,7 +80,7 @@ function initBrowserDetection(): void {
   ];
 
   for (const [name, pattern] of osPatterns) {
-    if (ua.match(pattern as RegExp)) {
+    if (ua.match(pattern)) {
       browser.os = name;
       break;
     }
@@ -91,13 +91,11 @@ function initBrowserDetection(): void {
   }
 
   // Detect touch capability
-  browser.touch = () => {
-    return (
-      'ontouchstart' in window ||
-      navigator.maxTouchPoints > 0 ||
-      (navigator as any).msMaxTouchPoints > 0
-    );
-  }();
+  browser.touch = (
+    'ontouchstart' in window ||
+    navigator.maxTouchPoints > 0 ||
+    (navigator as any).msMaxTouchPoints > 0
+  );
 
   // Detect mobile
   const mobilePatterns = [
@@ -109,5 +107,3 @@ function initBrowserDetection(): void {
 
 // Initialize on load
 initBrowserDetection();
-
-export default browser;

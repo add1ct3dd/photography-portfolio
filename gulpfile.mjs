@@ -330,12 +330,12 @@ gulp.task('precompress:gzip', () => {
         });
 });
 
-// Precompress assets with brotli (quality 11 - maximum)
-gulbuild task
+// build task
 gulp.task('build', gulp.series('compile-ts', gulp.parallel('sass', 'minify-js'), 'minify-css', 'generate-hashes'));
 
 // build with precompression for production
-gulp.task('build:prod', gulp.series('build', 'precompress:gzip'
+gulp.task('build:prod', gulp.series('build', 'precompress:gzip'));
+
 // resize images (incremental - only new images)
 gulp.task('resize', gulp.series('resize-images'));
 
