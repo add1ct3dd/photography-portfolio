@@ -80,32 +80,43 @@ class DialogLightbox {
         const image = this.dialog?.querySelector(".lightbox-image");
         if (!imageContainer || !image)
             return;
+        let isPanning = false;
+        let lastTapTime = 0;
+        let lastTapX = 0;
+        let lastTapY = 0;
         const handleTouchStart = (e) => {
+            e.stopPropagation();
             if (e.touches.length === 2) {
                 e.preventDefault();
-                e.stopPropagation();
                 this.isPinching = true;
+                isPanning = false;
                 this.initialDistance = this.getTouchDistance(e.touches);
                 this.lastScale = this.currentScale;
             }
-            else if (e.touches.length === 1 && this.currentScale > 1) {
-                e.preventDefault();
-                this.lastTouchX = e.touches[0].clientX;
-                this.lastTouchY = e.touches[0].clientY;
-                this.lastTranslateX = this.translateX;
-                this.lastTranslateY = this.translateY;
+            else if (e.touches.length === 1) {
+                if (this.currentScale > 1) {
+                    e.preventDefault();
+                    isPanning = true;
+                    this.lastTouchX = e.touches[0].clientX;
+                    this.lastTouchY = e.touches[0].clientY;
+                    this.lastTranslateX = this.translateX;
+                    this.lastTranslateY = this.translateY;
+                }
+                else {
+                    isPanning = false;
+                }
             }
         };
         const handleTouchMove = (e) => {
+            e.stopPropagation();
             if (e.touches.length === 2 && this.isPinching) {
                 e.preventDefault();
-                e.stopPropagation();
                 const currentDistance = this.getTouchDistance(e.touches);
                 const scale = (currentDistance / this.initialDistance) * this.lastScale;
                 this.currentScale = Math.min(Math.max(scale, 1), this.maxZoom);
                 this.applyTransform(image);
             }
-            else if (e.touches.length === 1 && this.currentScale > 1) {
+            else if (e.touches.length === 1 && this.currentScale > 1 && isPanning) {
                 e.preventDefault();
                 const deltaX = e.touches[0].clientX - this.lastTouchX;
                 const deltaY = e.touches[0].clientY - this.lastTouchY;
@@ -114,10 +125,29 @@ class DialogLightbox {
                 this.applyTransform(image);
             }
         };
-        let lastTapTime = 0;
-        let lastTapX = 0;
-        let lastTapY = 0;
         const handleTouchEnd = (e) => {
+            e.stopPropagation();
+            const wasPinching = this.isPinching;
+            const wasPanning = isPanning;
+            if (e.touches.length === 0) {
+                this.isPinching = false;
+                isPanning = false;
+            }
+            else if (e.touches.length < 2) {
+                this.isPinching = false;
+            }
+            if (wasPinching) {
+                this.lastScale = this.currentScale;
+                if (this.currentScale <= 1) {
+                    this.resetZoom(image);
+                }
+                return;
+            }
+            if (wasPanning) {
+                this.lastTranslateX = this.translateX;
+                this.lastTranslateY = this.translateY;
+                return;
+            }
             if (e.touches.length === 0 && e.changedTouches.length === 1) {
                 const now = Date.now();
                 const touch = e.changedTouches[0];
@@ -125,9 +155,8 @@ class DialogLightbox {
                 const tapY = touch.clientY;
                 const timeDiff = now - lastTapTime;
                 const distDiff = Math.sqrt(Math.pow(tapX - lastTapX, 2) + Math.pow(tapY - lastTapY, 2));
-                if (timeDiff < 300 && distDiff < 50) {
+                if (timeDiff < 300 && timeDiff > 50 && distDiff < 50) {
                     e.preventDefault();
-                    e.stopPropagation();
                     if (this.currentScale > 1) {
                         this.resetZoom(image);
                     }
@@ -137,10 +166,11 @@ class DialogLightbox {
                         const relTapY = tapY - rect.top;
                         const centerX = rect.width / 2;
                         const centerY = rect.height / 2;
-                        this.currentScale = this.maxZoom;
-                        this.lastScale = this.maxZoom;
-                        this.translateX = (centerX - relTapX) * (this.maxZoom - 1);
-                        this.translateY = (centerY - relTapY) * (this.maxZoom - 1);
+                        const targetZoom = Math.max(this.maxZoom, 2);
+                        this.currentScale = targetZoom;
+                        this.lastScale = targetZoom;
+                        this.translateX = (centerX - relTapX) * (targetZoom - 1);
+                        this.translateY = (centerY - relTapY) * (targetZoom - 1);
                         this.applyTransform(image);
                     }
                     lastTapTime = 0;
@@ -150,20 +180,10 @@ class DialogLightbox {
                 lastTapX = tapX;
                 lastTapY = tapY;
             }
-            if (e.touches.length < 2 && this.isPinching) {
-                this.isPinching = false;
-                this.lastScale = this.currentScale;
-            }
-            if (this.currentScale <= 1) {
-                this.resetZoom(image);
-            }
         };
         imageContainer.addEventListener("touchstart", handleTouchStart, { passive: false });
         imageContainer.addEventListener("touchmove", handleTouchMove, { passive: false });
         imageContainer.addEventListener("touchend", handleTouchEnd, { passive: false });
-        image.addEventListener("touchstart", handleTouchStart, { passive: false });
-        image.addEventListener("touchmove", handleTouchMove, { passive: false });
-        image.addEventListener("touchend", handleTouchEnd, { passive: false });
         if ('GestureEvent' in window) {
             imageContainer.addEventListener("gesturestart", (e) => {
                 e.preventDefault();
