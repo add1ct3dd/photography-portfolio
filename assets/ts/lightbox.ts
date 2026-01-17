@@ -395,9 +395,14 @@ class DialogLightbox {
     const naturalHeight = img.naturalHeight;
     const imageRatio = naturalWidth / naturalHeight;
 
-    // Calculate max available space
+    // Estimate space needed for metadata and UI elements
+    // On tiny viewports (< 737px), metadata is hidden so less space needed
+    const isTinyViewport = window.innerWidth <= 737;
+    const metadataHeight = isTinyViewport ? 40 : 80; // Less space on mobile
+
+    // Calculate max available space, accounting for metadata/buttons
     const maxWidth = window.innerWidth * 0.9;
-    const maxHeight = window.innerHeight * 0.9;
+    const maxHeight = window.innerHeight * 0.9 - metadataHeight;
     const maxRatio = maxWidth / maxHeight;
 
     let newWidth: number;
@@ -413,9 +418,9 @@ class DialogLightbox {
       newWidth = newHeight * imageRatio;
     }
 
-    // Set dialog size (add 80px for metadata section)
+    // Set dialog size with metadata space included
     this.dialog.style.width = newWidth + "px";
-    this.dialog.style.height = (newHeight + 80) + "px";
+    this.dialog.style.height = (newHeight + metadataHeight) + "px";
     this.dialog.style.maxWidth = "95vw";
     this.dialog.style.maxHeight = "95vh";
   }
