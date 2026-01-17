@@ -34,7 +34,7 @@ gulp.task('resize-images', async function () {
     for (const file of imageFiles) {
         const inputPath = path.join(sourceDir, file);
         const baseName = path.parse(file).name;
-        
+
         try {
             // Resize for fulls - maximum quality for photography portfolio (95 JPEG, 94 WebP, 90 AVIF)
             await sharp(inputPath)
@@ -43,50 +43,14 @@ gulp.task('resize-images', async function () {
                 .jpeg({ quality: 95, progressive: true })
                 .toFile(path.join(fullsDir, `${baseName}.jpg`));
 
-            // Generate WebP version for fulls - very high quality
-            await sharp(inputPath)
-                .resize(3440, null, { withoutEnlargement: true })
-                .withMetadata()
-                .webp({ quality: 94 })
-                .toFile(path.join(fullsDir, `${baseName}.webp`));
-
-            // Generate AVIF version for fulls (modern format, very efficient at high quality)
-            try {
-                await sharp(inputPath)
-                    .resize(3440, null, { withoutEnlargement: true })
-                    .withMetadata()
-                    .avif({ quality: 90 })
-                    .toFile(path.join(fullsDir, `${baseName}.avif`));
-            } catch (err) {
-                console.warn(`AVIF generation skipped for ${file}: ${err.message}`);
-            }
-
             // Resize for thumbs - high quality (90 JPEG, 92 WebP, 88 AVIF)
             await sharp(inputPath)
                 .resize(840, null, { withoutEnlargement: true })
                 .withMetadata()
-                .jpeg({ quality: 90, progressive: true })
+                .jpeg({ quality: 92, progressive: true })
                 .toFile(path.join(thumbsDir, `${baseName}.jpg`));
 
-            // Generate WebP version for thumbs - high quality
-            await sharp(inputPath)
-                .resize(840, null, { withoutEnlargement: true })
-                .withMetadata()
-                .webp({ quality: 92 })
-                .toFile(path.join(thumbsDir, `${baseName}.webp`));
-
-            // Generate AVIF version for thumbs - very efficient at high quality
-            try {
-                await sharp(inputPath)
-                    .resize(840, null, { withoutEnlargement: true })
-                    .withMetadata()
-                    .avif({ quality: 88 })
-                    .toFile(path.join(thumbsDir, `${baseName}.avif`));
-            } catch (err) {
-                console.warn(`AVIF generation skipped for ${file} thumbnail: ${err.message}`);
-            }
-
-            console.log(`Generated: ${baseName} (JPEG, WebP, AVIF)`);
+            console.log(`Generated: ${baseName}`);
         } catch (err) {
             console.error(`Error processing ${file}:`, err.message);
         }

@@ -20,10 +20,9 @@ layout: default
         {% for image in site.static_files reversed %}
         {% if image.path contains 'fulls' and image.name contains '.jpg' %}
         <article class="thumb">
-            <a href="{{ site.baseurl }}{{ site.image_fulls_loc }}/{{ image.name }}"
-                class="image" aria-label="View full size image {{ image.name }}">
-                <img src="{{ site.baseurl }}{{ site.image_thumbs_loc }}/{{ image.name }}"
-                    alt="Photo: {{ image.name }}"
+            <a href="{{ site.baseurl }}{{ site.image_fulls_loc }}/{{ image.name }}" class="image"
+                aria-label="View full size image {{ image.name }}">
+                <img src="{{ site.baseurl }}{{ site.image_thumbs_loc }}/{{ image.name }}" alt="Photo: {{ image.name }}"
                     data-name="{{ image.name }}" />
             </a>
         </article>
