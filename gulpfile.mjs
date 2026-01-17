@@ -12,6 +12,7 @@ import path from 'path';
 import del from 'del';
 import fs from 'fs';
 import { promises as fsPromises } from 'fs';
+import crypto from 'crypto';
 
 const sass = gulpSass(dartSass);
 
@@ -266,8 +267,60 @@ gulp.task('compile-ts', function (done) {
     }
 });
 
+// Generate cache-busting hashes for CSS and JS files
+gulp.task('generate-hashes', async function () {
+    const jsFiles = [
+        'assets/js/icons.js',
+        'assets/js/browser.min.js',
+        'assets/js/breakpoints.min.js',
+        'assets/js/exif.min.js',
+        'assets/js/main.min.js',
+        'assets/js/lightbox.min.js'
+    ];
+    
+    const cssFiles = [
+        'assets/css/custom.min.css',
+        'assets/css/main.min.css',
+        'assets/css/noscript.min.css'
+    ];
+
+    const hashes = {};
+
+    // Generate hashes for JS files
+    for (const file of jsFiles) {
+        if (fs.existsSync(file)) {
+            const content = await fsPromises.readFile(file);
+            const hash = crypto.createHash('md5').update(content).digest('hex').slice(0, 8);
+            hashes[file] = hash;
+        }
+    }
+
+    // Generate hashes for CSS files
+    for (const file of cssFiles) {
+        if (fs.existsSync(file)) {
+            const content = await fsPromises.readFile(file);
+            const hash = crypto.createHash('md5').update(content).digest('hex').slice(0, 8);
+            hashes[file] = hash;
+        }
+    }
+
+    // Write hashes to Jekyll data file
+    const dataDir = '_data';
+    await fsPromises.mkdir(dataDir, { recursive: true });
+    await fsPromises.writeFile(
+        path.join(dataDir, 'asset-hashes.json'),
+        JSON.stringify(hashes, null, 2)
+    );
+
+    console.log('\n📦 Generated asset cache-busting hashes:\n');
+    Object.entries(hashes).forEach(([file, hash]) => {
+        console.log(`   ${file}: ${hash}`);
+    });
+    console.log('\n   Hashes written to _data/asset-hashes.json\n');
+});
+
 // build task
-gulp.task('build', gulp.series('compile-ts', 'sass', 'minify-css', 'minify-js'));
+gulp.task('build', gulp.series('compile-ts', 'sass', 'minify-css', 'minify-js', 'generate-hashes'));
 
 // resize images (incremental - only new images)
 gulp.task('resize', gulp.series('resize-images'));
