@@ -20,9 +20,9 @@ layout: default
         {% for image in site.static_files reversed %}
         {% if image.path contains '/fulls/' and image.name contains '-3440w.jpg' %}
         {% assign baseName = image.name | replace: '-3440w.jpg', '' %}
-        <article class="thumb">
+        <article class="thumb" role="img" aria-label="Gallery item: {{ baseName }}">
             <a href="{{ site.baseurl }}/images/fulls/{{ baseName }}.jpg" class="image"
-                aria-label="View full size image {{ baseName }}.jpg">
+                aria-label="View full size image {{ baseName }}" role="button" tabindex="0">
                 <!-- Responsive image with lazy loading -->
                 <picture>
                     <!-- AVIF format - best compression (30-40% smaller than JPEG) -->
@@ -37,13 +37,14 @@ layout: default
                             {{ site.baseurl }}/images/thumbs/webp/{{ baseName }}-400w.webp 400w,
                             {{ site.baseurl }}/images/thumbs/webp/{{ baseName }}-840w.webp 840w
                         " sizes="(max-width: 600px) 95vw, (max-width: 1024px) 50vw, 33vw" type="image/webp" />
-                    <!-- JPEG fallback -->
+                    <!-- JPEG fallback with aspect-ratio to prevent layout shift -->
                     <img src="{{ site.baseurl }}/images/thumbs/{{ baseName }}-840w.jpg" srcset="
                             {{ site.baseurl }}/images/thumbs/{{ baseName }}-200w.jpg 200w,
                             {{ site.baseurl }}/images/thumbs/{{ baseName }}-400w.jpg 400w,
                             {{ site.baseurl }}/images/thumbs/{{ baseName }}-840w.jpg 840w
                         " sizes="(max-width: 600px) 95vw, (max-width: 1024px) 50vw, 33vw" alt="Photo: {{ baseName }}.jpg"
-                        data-name="{{ baseName }}.jpg" loading="lazy" decoding="async" />
+                        data-name="{{ baseName }}.jpg" loading="lazy" decoding="async" 
+                        style="aspect-ratio: 16/9; object-fit: cover;" />
                 </picture>
             </a>
         </article>
@@ -74,7 +75,7 @@ layout: default
                         {% if site.social_urls.facebook %}
                         <li role="listitem">
                             <a href="{{ site.social_urls.facebook }}" target="_blank" rel="noopener noreferrer"
-                                class="icon brands" data-icon="facebook" aria-label="Visit Matthew Evans on Facebook">
+                                class="icon brands" data-icon="facebook" aria-label="Visit Matthew Evans' Facebook profile - opens in new window">
                                 <span class="label">Facebook</span>
                             </a>
                         </li>
@@ -82,7 +83,7 @@ layout: default
                         {% if site.social_urls.twitter %}
                         <li role="listitem">
                             <a href="{{ site.social_urls.twitter }}" target="_blank" rel="noopener noreferrer"
-                                class="icon brands" data-icon="twitter" aria-label="Visit Matthew Evans on Twitter">
+                                class="icon brands" data-icon="twitter" aria-label="Visit Matthew Evans' Twitter profile - opens in new window">
                                 <span class="label">Twitter</span>
                             </a>
                         </li>
@@ -90,7 +91,7 @@ layout: default
                         {% if site.social_urls.instagram %}
                         <li role="listitem">
                             <a href="{{ site.social_urls.instagram }}" target="_blank" rel="noopener noreferrer"
-                                class="icon brands" data-icon="instagram" aria-label="Visit Matthew Evans on Instagram">
+                                class="icon brands" data-icon="instagram" aria-label="Visit Matthew Evans' Instagram profile - opens in new window">
                                 <span class="label">Instagram</span>
                             </a>
                         </li>
@@ -98,7 +99,7 @@ layout: default
                         {% if site.social_urls.dribbble %}
                         <li role="listitem">
                             <a href="{{ site.social_urls.dribbble }}" target="_blank" rel="noopener noreferrer"
-                                class="icon brands" data-icon="dribbble" aria-label="Visit Matthew Evans on Dribbble">
+                                class="icon brands" data-icon="dribbble" aria-label="Visit Matthew Evans' Dribbble portfolio - opens in new window">
                                 <span class="label">Dribbble</span>
                             </a>
                         </li>
@@ -106,7 +107,7 @@ layout: default
                         {% if site.social_urls.github %}
                         <li role="listitem">
                             <a href="{{ site.social_urls.github }}" target="_blank" rel="noopener noreferrer"
-                                class="icon brands" data-icon="github" aria-label="Visit Matthew Evans on GitHub">
+                                class="icon brands" data-icon="github" aria-label="Visit Matthew Evans' GitHub repositories - opens in new window">
                                 <span class="label">GitHub</span>
                             </a>
                         </li>
