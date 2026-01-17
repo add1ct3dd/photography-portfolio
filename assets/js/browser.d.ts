@@ -9,4 +9,3 @@ interface BrowserInfo {
 }
 declare const browser: BrowserInfo;
 declare function initBrowserDetection(): void;
-//# sourceMappingURL=browser.d.ts.map

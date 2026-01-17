@@ -7,6 +7,13 @@ interface ExifConfig {
 interface ExifData {
     [imageName: string]: string;
 }
+interface EXIFLibrary {
+    getData: (img: HTMLImageElement, callback: () => void) => void;
+    getTag: (img: HTMLImageElement, tag: string) => string | undefined;
+}
+interface IconsLibrary {
+    [key: string]: string;
+}
 declare class DialogLightbox {
     private selector;
     private dialog;
@@ -32,4 +39,3 @@ declare class DialogLightbox {
     private adjustDialogSize;
     private close;
 }
-//# sourceMappingURL=lightbox.d.ts.map

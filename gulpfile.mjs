@@ -1,3 +1,19 @@
+// @ts-check
+/**
+ * Build system for photography portfolio
+ * Includes: Sass compilation, image resizing, JS transpilation, and asset hashing
+ * 
+ * IMPORTANT: This file uses @ts-check for TypeScript checking with JSDoc type hints.
+ * Type definitions are installed to catch API changes in dependencies:
+ * - @types/node: Node.js APIs (fs, path, child_process, crypto)
+ * - @types/gulp: Gulp task API
+ * - @types/gulp-rename, @types/gulp-gzip, @types/gulp-uglify: Gulp plugin APIs
+ * 
+ * Version-specific configurations:
+ * - gulp-sass 6.0.0+: Uses 'style' option, not 'outputStyle'
+ * - del 8.0.0+: Uses named export 'deleteAsync' instead of default export
+ */
+
 import gulp from 'gulp';
 import sharp from 'sharp';
 import * as dartSass from 'sass';
@@ -7,9 +23,9 @@ import uglify from 'gulp-uglify';
 import rename from 'gulp-rename';
 import filter from 'gulp-filter';
 import gzip from 'gulp-gzip';
+import { deleteAsync } from 'del';
 import { spawn } from 'child_process';
 import path from 'path';
-import del from 'del';
 import fs from 'fs';
 import { promises as fsPromises } from 'fs';
 import crypto from 'crypto';
@@ -116,7 +132,7 @@ gulp.task('resize-images-full', async function () {
     // Delete all generated images
     console.log(`\n🗑️  Clearing existing generated images...\n`);
     for (const size of sizes) {
-        await del([`images/${size.name}/**`, `!images/${size.name}`]);
+        await deleteAsync([`images/${size.name}/**`, `!images/${size.name}`]);
     }
 
     // Ensure output directories exist
@@ -182,9 +198,18 @@ gulp.task('resize-images-full', async function () {
 });
 
 // compile scss to css
+/**
+ * Compiles Sass files to compressed CSS with proper cache-busting names
+ * Uses dart-sass with gulp-sass 6.0.0 (note: uses 'style' not 'outputStyle')
+ * @see https://github.com/dlmanning/gulp-sass#options
+ */
 gulp.task('sass', function () {
     return gulp.src('./assets/sass/**/*.scss')  // Target all .scss files
-        .pipe(sass({ outputStyle: 'compressed' }).on('error', sass.logError))
+        .pipe(sass.sync({ 
+            style: 'compressed',  // gulp-sass 6.0.0+ uses 'style', not 'outputStyle'
+            quietDeps: true,  // Suppress warnings from dependencies
+            silenceDeprecations: ['import']  // Suppress @import deprecation warnings
+        }).on('error', sass.logError))
         .pipe(rename(function (path) {
             path.basename += '.min';  // Append .min to the output filename
         }))
@@ -212,6 +237,11 @@ gulp.task('sass:watch', function () {
 });
 
 // transpile and minify js with babel
+/**
+ * Transpiles JavaScript with Babel (ES6+ to ES5 compatible)
+ * Minifies with UglifyJS and adds .min suffix to output filenames
+ * Skips already-minified files (.min.js)
+ */
 gulp.task('minify-js', function () {
     return gulp.src('./assets/js/**/*.js')
         .pipe(filter(function (file) {
@@ -322,11 +352,44 @@ gulp.task('precompress:gzip', () => {
         });
 });
 
+// minify HTML in the built site
+gulp.task('minify-html', async () => {
+    const htmlFiles = await fsPromises.readdir('_site', { recursive: true });
+    const HtmlMinifier = (await import('html-minifier')).minify;
+    
+    for (const file of htmlFiles) {
+        if (!file.endsWith('.html')) continue;
+        
+        const filePath = path.join('_site', file);
+        const stats = await fsPromises.stat(filePath);
+        if (!stats.isFile()) continue;
+        
+        try {
+            const input = await fsPromises.readFile(filePath, 'utf-8');
+            const output = HtmlMinifier(input, {
+                removeComments: true,
+                collapseWhitespace: true,
+                minifyCSS: true,
+                minifyJS: true,
+                removeRedundantAttributes: true,
+                removeScriptTypeAttributes: true,
+                removeStyleLinkTypeAttributes: true,
+                sortAttributes: true,
+                sortClassName: true
+            });
+            await fsPromises.writeFile(filePath, output);
+        } catch (err) {
+            console.error(`Error minifying ${filePath}:`, err.message);
+        }
+    }
+    console.log('\n✓ HTML minification complete\n');
+});
+
 // build task
 gulp.task('build', gulp.series('compile-ts', gulp.parallel('sass', 'minify-js'), 'minify-css', 'generate-hashes'));
 
 // build with precompression for production
-gulp.task('build:prod', gulp.series('build', 'precompress:gzip'));
+gulp.task('build:prod', gulp.series('build', 'minify-html', 'precompress:gzip'));
 
 // resize images (incremental - only new images)
 gulp.task('resize', gulp.series('resize-images'));

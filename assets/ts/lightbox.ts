@@ -14,6 +14,15 @@ interface ExifData {
   [imageName: string]: string;
 }
 
+interface EXIFLibrary {
+  getData: (img: HTMLImageElement, callback: () => void) => void;
+  getTag: (img: HTMLImageElement, tag: string) => string | undefined;
+}
+
+interface IconsLibrary {
+  [key: string]: string;
+}
+
 class DialogLightbox {
   private dialog: HTMLDialogElement | null = null;
   private currentImageIndex: number = 0;
@@ -247,7 +256,7 @@ class DialogLightbox {
     container: HTMLDivElement
   ): void {
     // Check if EXIF library is available
-    if (!(window as any).EXIF) {
+    if (!window.EXIF) {
       container.innerHTML = "<p>View on Flickr</p>";
       return;
     }
@@ -256,19 +265,19 @@ class DialogLightbox {
       if (img && img.src) {
         // Create a fresh image element to avoid EXIF.js caching issues
         const tempImg = new Image();
-
+        
         tempImg.onload = () => {
-          (window as any).EXIF.getData(tempImg, () => {
+          window.EXIF?.getData(tempImg, () => {
             const markup = this.getExifDataMarkup(tempImg, imgName);
             this.exifDatas[imgName] = markup;
             container.innerHTML = markup;
           });
         };
-
+        
         tempImg.onerror = () => {
           container.innerHTML = "<p>View on Flickr</p>";
         };
-
+        
         // Set the src to trigger load
         tempImg.src = img.src;
       } else {
@@ -280,16 +289,15 @@ class DialogLightbox {
   }
 
   private getExifDataMarkup(img: HTMLImageElement, imgName: string): string {
-    const EXIF = (window as any).EXIF;
-    const icons = (window as any).icons || {};
-
+    const EXIF = window.EXIF;
+    const icons = window.icons || {};
+    
     let template = "";
 
     // Add EXIF tags
     for (const current in this.exifConfig) {
       const currentData = this.exifConfig[current];
-      const exifValue = EXIF.getTag(img, currentData.tag);
-
+      const exifValue = EXIF?.getTag(img, currentData.tag);
       if (typeof exifValue !== "undefined") {
         const iconSvg = this.getIconSvg(icons, currentData.icon);
         const tagName = currentData.tag.split(/(?=[A-Z])/).join(" ");
