@@ -5,6 +5,7 @@
   "main": "index.html",
   "scripts": {
     "build": "npm run build:css && jekyll build",
+    "build:prod": "gulp build:prod",
     "build:css": "gulp build",
     "watch": "gulp sass:watch",
     "resize": "gulp resize",
@@ -45,6 +46,7 @@
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-filter": "^9.0.1",
+    "gulp-gzip": "^1.4.2",
     "gulp-rename": "^1.4.0",
     "gulp-sass": "^5.0.0",
     "gulp-uglify": "^3.0.2",
