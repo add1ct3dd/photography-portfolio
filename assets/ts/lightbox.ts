@@ -159,8 +159,16 @@ class DialogLightbox {
     ) as HTMLDivElement;
 
     if (imageElement && exifContainer) {
+      // Check if we should show the loading message (not on tiniest viewport where it's hidden anyway)
+      const shouldShowLoadingMessage = window.innerWidth > 737;
+      
       // Always clear previous metadata
-      exifContainer.innerHTML = '<p>Loading metadata...</p>';
+      if (shouldShowLoadingMessage) {
+        exifContainer.innerHTML = '<p>Loading metadata...</p>';
+      } else {
+        // On tiny viewports, just clear but don't show loading message
+        exifContainer.innerHTML = '';
+      }
       
       // Reset image opacity before loading new one
       imageElement.style.opacity = "0";
@@ -206,7 +214,7 @@ class DialogLightbox {
         });
       };
       
-      // Load EXIF data for this image
+      // Load EXIF data for this image always, so it's ready if viewport expands
       // Use a small delay to ensure image is loaded
       setTimeout(() => {
         // Double-check we're still viewing this image

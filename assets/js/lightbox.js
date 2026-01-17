@@ -105,7 +105,13 @@ class DialogLightbox {
         const imageElement = this.dialog?.querySelector(".lightbox-image");
         const exifContainer = this.dialog?.querySelector(".lightbox-exif");
         if (imageElement && exifContainer) {
-            exifContainer.innerHTML = '<p>Loading metadata...</p>';
+            const shouldShowLoadingMessage = window.innerWidth > 737;
+            if (shouldShowLoadingMessage) {
+                exifContainer.innerHTML = '<p>Loading metadata...</p>';
+            }
+            else {
+                exifContainer.innerHTML = '';
+            }
             imageElement.style.opacity = "0";
             imageElement.srcset = `
         /images/fulls/avif/${baseName}-600w.avif 600w,
