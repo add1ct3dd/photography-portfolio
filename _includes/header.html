@@ -53,17 +53,17 @@
 </style>
 
 <!-- Main stylesheets -->
-<link rel="preload" href="assets/css/main.min.css" as="style" onload="this.rel='stylesheet'">
-<link rel="preload" href="assets/css/custom.min.css" as="style" onload="this.rel='stylesheet'">
+<link rel="preload" href="assets/css/main.min.css?v={{ site.data.asset-hashes['assets/css/main.min.css'] }}" as="style" onload="this.rel='stylesheet'">
+<link rel="preload" href="assets/css/custom.min.css?v={{ site.data.asset-hashes['assets/css/custom.min.css'] }}" as="style" onload="this.rel='stylesheet'">
 <link rel="preload" href="/assets/css/icons.css" as="style" onload="this.rel='stylesheet'">
 <link rel="preload" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic"
   as="style" onload="this.rel='stylesheet'">
 
 <!-- Fallback for no-JS -->
 <noscript>
-  <link rel="stylesheet" href="assets/css/main.min.css" />
-  <link rel="stylesheet" href="assets/css/noscript.min.css" />
-  <link rel="stylesheet" href="assets/css/custom.min.css" />
+  <link rel="stylesheet" href="assets/css/main.min.css?v={{ site.data.asset-hashes['assets/css/main.min.css'] }}" />
+  <link rel="stylesheet" href="assets/css/noscript.min.css?v={{ site.data.asset-hashes['assets/css/noscript.min.css'] }}" />
+  <link rel="stylesheet" href="assets/css/custom.min.css?v={{ site.data.asset-hashes['assets/css/custom.min.css'] }}" />
   <link rel="stylesheet" href="/assets/css/icons.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic">
 </noscript>
