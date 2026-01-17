@@ -2,6 +2,7 @@ import gulp from 'gulp';
 import sharp from 'sharp';
 import * as dartSass from 'sass';
 import gulpSass from 'gulp-sass';
+import babel from 'gulp-babel';
 import uglify from 'gulp-uglify';
 import rename from 'gulp-rename';
 import filter from 'gulp-filter';
@@ -71,7 +72,7 @@ gulp.task('sass:watch', function () {
     gulp.watch('./assets/sass/**/*.scss', gulp.series('sass'));
 });
 
-// minify js
+// transpile and minify js with babel
 gulp.task('minify-js', function () {
     return gulp.src('./assets/js/**/*.js')
         .pipe(filter(function (file) {
@@ -80,6 +81,10 @@ gulp.task('minify-js', function () {
 
             // Skip files that are already minified
             return !basename.endsWith('.min');
+        }))
+        .pipe(babel({
+            presets: [['@babel/preset-env', { modules: false }]],
+            compact: true
         }))
         .pipe(uglify())
         .pipe(rename(function (path) {
