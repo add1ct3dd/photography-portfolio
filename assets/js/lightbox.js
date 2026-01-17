@@ -8,6 +8,16 @@ class DialogLightbox {
         this.exifDatas = {};
         this.exifConfig = {};
         this.isTransitioning = false;
+        this.currentScale = 1;
+        this.initialDistance = 0;
+        this.lastScale = 1;
+        this.translateX = 0;
+        this.translateY = 0;
+        this.lastTranslateX = 0;
+        this.lastTranslateY = 0;
+        this.isPinching = false;
+        this.lastTouchX = 0;
+        this.lastTouchY = 0;
         this.init();
     }
     init() {
@@ -62,6 +72,101 @@ class DialogLightbox {
                 this.close();
             }
         });
+        this.attachTouchHandlers();
+    }
+    attachTouchHandlers() {
+        const imageContainer = this.dialog?.querySelector(".lightbox-image-container");
+        const image = this.dialog?.querySelector(".lightbox-image");
+        if (!imageContainer || !image)
+            return;
+        imageContainer.addEventListener("touchstart", (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                this.isPinching = true;
+                this.initialDistance = this.getTouchDistance(e.touches);
+                this.lastScale = this.currentScale;
+            }
+            else if (e.touches.length === 1 && this.currentScale > 1) {
+                e.preventDefault();
+                this.lastTouchX = e.touches[0].clientX;
+                this.lastTouchY = e.touches[0].clientY;
+                this.lastTranslateX = this.translateX;
+                this.lastTranslateY = this.translateY;
+            }
+        }, { passive: false });
+        imageContainer.addEventListener("touchmove", (e) => {
+            if (e.touches.length === 2 && this.isPinching) {
+                e.preventDefault();
+                const currentDistance = this.getTouchDistance(e.touches);
+                const scale = (currentDistance / this.initialDistance) * this.lastScale;
+                this.currentScale = Math.min(Math.max(scale, 1), 4);
+                this.applyTransform(image);
+            }
+            else if (e.touches.length === 1 && this.currentScale > 1) {
+                e.preventDefault();
+                const deltaX = e.touches[0].clientX - this.lastTouchX;
+                const deltaY = e.touches[0].clientY - this.lastTouchY;
+                this.translateX = this.lastTranslateX + deltaX;
+                this.translateY = this.lastTranslateY + deltaY;
+                this.applyTransform(image);
+            }
+        }, { passive: false });
+        imageContainer.addEventListener("touchend", (e) => {
+            if (e.touches.length < 2) {
+                this.isPinching = false;
+            }
+            if (this.currentScale <= 1) {
+                this.resetZoom(image);
+            }
+        });
+        let lastTap = 0;
+        imageContainer.addEventListener("touchend", (e) => {
+            if (e.touches.length === 0 && e.changedTouches.length === 1) {
+                const now = Date.now();
+                if (now - lastTap < 300) {
+                    e.preventDefault();
+                    if (this.currentScale > 1) {
+                        this.resetZoom(image);
+                    }
+                    else {
+                        const rect = imageContainer.getBoundingClientRect();
+                        const tapX = e.changedTouches[0].clientX - rect.left;
+                        const tapY = e.changedTouches[0].clientY - rect.top;
+                        const centerX = rect.width / 2;
+                        const centerY = rect.height / 2;
+                        this.currentScale = 2;
+                        this.translateX = (centerX - tapX);
+                        this.translateY = (centerY - tapY);
+                        this.applyTransform(image);
+                    }
+                }
+                lastTap = now;
+            }
+        });
+    }
+    getTouchDistance(touches) {
+        const dx = touches[0].clientX - touches[1].clientX;
+        const dy = touches[0].clientY - touches[1].clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+    applyTransform(image) {
+        image.style.transform = `translate3d(${this.translateX}px, ${this.translateY}px, 0) scale(${this.currentScale})`;
+        this.updateImageSizesForZoom(image);
+    }
+    updateImageSizesForZoom(image) {
+        const baseSize = window.innerWidth <= 768 ? 95 : 90;
+        const effectiveSize = Math.min(baseSize * this.currentScale, 100 * 4);
+        image.sizes = `${effectiveSize}vw`;
+    }
+    resetZoom(image) {
+        this.currentScale = 1;
+        this.translateX = 0;
+        this.translateY = 0;
+        this.lastScale = 1;
+        this.lastTranslateX = 0;
+        this.lastTranslateY = 0;
+        image.style.transform = "translate3d(0, 0, 0) scale(1)";
+        image.sizes = "(max-width: 768px) 95vw, 90vw";
     }
     attachThumbnailListeners() {
         this.images.forEach((link, index) => {
@@ -106,6 +211,7 @@ class DialogLightbox {
         const imageElement = this.dialog?.querySelector(".lightbox-image");
         const exifContainer = this.dialog?.querySelector(".lightbox-exif");
         if (imageElement && exifContainer) {
+            this.resetZoom(imageElement);
             const shouldShowLoadingMessage = window.innerWidth > 737;
             if (shouldShowLoadingMessage) {
                 exifContainer.innerHTML = '<p>Loading metadata...</p>';
