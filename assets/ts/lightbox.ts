@@ -145,9 +145,11 @@ class DialogLightbox {
 
   private showImage(): void {
     const link = this.images[this.currentImageIndex];
-    const fullImageUrl = link.href;
     const thumbImg = link.querySelector("img") as HTMLImageElement;
     const imgName = thumbImg?.dataset.name || "";
+    
+    // Extract base name without extension
+    const baseName = imgName.replace(/\.[^.]+$/, '');
 
     const imageElement = this.dialog?.querySelector(
       ".lightbox-image"
@@ -163,9 +165,28 @@ class DialogLightbox {
       // Reset image opacity before loading new one
       imageElement.style.opacity = "0";
       
-      // Set the image source - this will trigger load event
-      imageElement.src = fullImageUrl;
+      // Use responsive image with high-quality variants for lightbox
+      imageElement.srcset = `
+        /images/fulls/avif/${baseName}-600w.avif 600w,
+        /images/fulls/webp/${baseName}-600w.webp 600w,
+        /images/fulls/${baseName}-600w.jpg 600w,
+        /images/fulls/avif/${baseName}-1200w.avif 1200w,
+        /images/fulls/webp/${baseName}-1200w.webp 1200w,
+        /images/fulls/${baseName}-1200w.jpg 1200w,
+        /images/fulls/avif/${baseName}-2400w.avif 2400w,
+        /images/fulls/webp/${baseName}-2400w.webp 2400w,
+        /images/fulls/${baseName}-2400w.jpg 2400w,
+        /images/fulls/avif/${baseName}-3440w.avif 3440w,
+        /images/fulls/webp/${baseName}-3440w.webp 3440w,
+        /images/fulls/${baseName}-3440w.jpg 3440w
+      `;
+      // Use sizes to tell browser how large image will display (approximately 90vw on desktop)
+      imageElement.sizes = "(max-width: 768px) 95vw, 90vw";
+      // Set src to highest quality fallback
+      imageElement.src = `/images/fulls/${baseName}-3440w.jpg`;
       imageElement.alt = thumbImg?.alt || "Full size image";
+      // Enable lazy decoding for better performance
+      imageElement.decoding = "async";
       
       // Handle image load for sizing and fade-in
       imageElement.onload = () => {
@@ -320,8 +341,46 @@ class DialogLightbox {
     setTimeout(() => {
       this.currentImageIndex = newIndex;
       this.showImage();
+      // Prefetch adjacent images for smoother navigation
+      this.prefetchAdjacentImages();
       this.isTransitioning = false;
     }, 200);
+  }
+
+  private prefetchAdjacentImages(): void {
+    // Prefetch next 2 images and previous 1 image for optimal UX
+    const indicesToPrefetch: number[] = [];
+    
+    // Previous image
+    if (this.currentImageIndex > 0) {
+      indicesToPrefetch.push(this.currentImageIndex - 1);
+    }
+    
+    // Next 2 images
+    if (this.currentImageIndex < this.images.length - 1) {
+      indicesToPrefetch.push(this.currentImageIndex + 1);
+    }
+    if (this.currentImageIndex < this.images.length - 2) {
+      indicesToPrefetch.push(this.currentImageIndex + 2);
+    }
+
+    indicesToPrefetch.forEach((index) => {
+      const link = this.images[index];
+      const thumbImg = link.querySelector("img") as HTMLImageElement;
+      const imgName = thumbImg?.dataset.name || "";
+      const baseName = imgName.replace(/\.[^.]+$/, '');
+
+      // Create link element for preloading - browser will fetch but not render
+      const preloadLink = document.createElement("link");
+      preloadLink.rel = "prefetch";
+      preloadLink.as = "image";
+      // Prefetch the 1200w variant as a good balance between size and quality
+      preloadLink.href = `/images/fulls/webp/${baseName}-1200w.webp`;
+      // Only add if not already in DOM to avoid duplicates
+      if (!document.head.querySelector(`link[href="${preloadLink.href}"]`)) {
+        document.head.appendChild(preloadLink);
+      }
+    });
   }
 
   private adjustDialogSize(img: HTMLImageElement): void {

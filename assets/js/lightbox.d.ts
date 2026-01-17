@@ -28,6 +28,7 @@ declare class DialogLightbox {
     private nextImage;
     private previousImage;
     private fadeToImage;
+    private prefetchAdjacentImages;
     private adjustDialogSize;
     private close;
 }
