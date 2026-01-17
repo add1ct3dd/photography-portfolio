@@ -9,7 +9,7 @@
   max-height: 95vh;
   width: auto;
   height: auto;
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   animation: lightboxOpen 0.3s ease-out;
@@ -53,6 +53,7 @@
   height: 100%;
   width: 100%;
   position: relative;
+  overflow: visible;
 }
 
 .lightbox-image-container {
@@ -68,6 +69,7 @@
   will-change: width, height;
   backface-visibility: hidden;
   transform: translate3d(0, 0, 0);
+  touch-action: pinch-zoom pan-x pan-y;
 }
 
 .lightbox-image {
@@ -82,6 +84,7 @@
   backface-visibility: hidden;
   transform: translate3d(0, 0, 0);
   animation: imageLoad 0.5s ease-out;
+  touch-action: pinch-zoom pan-x pan-y;
 }
 
 @keyframes imageLoad {
@@ -278,12 +281,22 @@
 @media (max-width: 737px) {
   .lightbox-dialog {
     max-width: 100vw;
-    max-height: 100vh;
+    max-height: 100dvh; /* Use dynamic viewport height for mobile */
+    height: 100dvh;
     border-radius: 0;
+    overflow: visible;
+  }
+
+  .lightbox-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
   }
 
   .lightbox-image-container {
-    min-height: 200px;
+    flex: 1 1 auto;
+    min-height: 0; /* Allow shrinking */
+    max-height: calc(100dvh - 60px); /* Leave room for info bar */
   }
 
   .lightbox-close,
@@ -295,12 +308,15 @@
   }
 
   .lightbox-info {
-    padding: 8px 12px;
+    flex: 0 0 auto;
+    padding: 10px 12px;
+    min-height: 50px;
     overflow: visible;
+    background: rgba(30, 30, 30, 1); /* Solid background */
   }
 
   .lightbox-exif {
-    font-size: 0.85em;
+    font-size: 0.9em;
     gap: 8px;
     overflow: visible;
   }
@@ -313,27 +329,32 @@
     width: 100%;
     justify-content: center;
     flex-shrink: 0;
+    padding: 8px 12px;
+    font-size: 1em;
   }
 }
 
 /* Landscape mobile - very limited vertical space */
 @media (max-height: 500px) and (orientation: landscape) {
   .lightbox-dialog {
-    max-height: 100vh;
+    max-height: 100dvh;
+    height: 100dvh;
   }
 
   .lightbox-image-container {
-    min-height: 150px;
+    max-height: calc(100dvh - 50px);
+    min-height: 0;
   }
 
   .lightbox-info {
     padding: 6px 10px;
-    position: relative;
+    min-height: 40px;
     overflow: visible;
+    background: rgba(30, 30, 30, 1);
   }
 
   .lightbox-exif {
-    font-size: 0.8em;
+    font-size: 0.85em;
     gap: 6px;
   }
 
@@ -343,8 +364,8 @@
 
   .lightbox-exif a.flickr-link {
     width: auto;
-    padding: 4px 10px;
-    font-size: 0.85em;
+    padding: 6px 12px;
+    font-size: 0.9em;
   }
 
   .lightbox-close,
