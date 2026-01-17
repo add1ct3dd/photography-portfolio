@@ -36,6 +36,11 @@ _site/
 .sass-cache/
 .jekyll-metadata
 
+### JavaScript source maps and unminified source (for production)
+assets/js/*.js.map
+assets/js/*.ts
+assets/compressed/
+
 ### Node template
 # Logs
 logs

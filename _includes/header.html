@@ -62,11 +62,14 @@
 <link rel="prefetch" href="/assets/js/lightbox.min.js?v={{ site.data.asset-hashes['assets/js/lightbox.min.js'] }}">
 <link rel="prefetch" href="/assets/js/exif.min.js?v={{ site.data.asset-hashes['assets/js/exif.min.js'] }}">
 
-<link rel="preload" href="assets/css/main.min.css?v={{ site.data.asset-hashes['assets/css/main.min.css'] }}" as="style" onload="this.rel='stylesheet'">
-<link rel="preload" href="assets/css/custom.min.css?v={{ site.data.asset-hashes['assets/css/custom.min.css'] }}" as="style" onload="this.rel='stylesheet'">
-<link rel="preload" href="/assets/css/icons.css" as="style" onload="this.rel='stylesheet'">
-<link rel="preload" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic"
-  as="style" onload="this.rel='stylesheet'">
+<link rel="preload" href="assets/css/main.min.css?v={{ site.data.asset-hashes['assets/css/main.min.css'] }}" as="style">
+<link rel="preload" href="assets/css/custom.min.css?v={{ site.data.asset-hashes['assets/css/custom.min.css'] }}" as="style">
+<link rel="stylesheet" href="assets/css/main.min.css?v={{ site.data.asset-hashes['assets/css/main.min.css'] }}">
+<link rel="stylesheet" href="assets/css/custom.min.css?v={{ site.data.asset-hashes['assets/css/custom.min.css'] }}">
+<link rel="preload" href="/assets/css/icons.css" as="style">
+<link rel="stylesheet" href="/assets/css/icons.css">
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic&display=swap" as="style">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic&display=swap">
 
 <!-- Fallback for no-JS -->
 <noscript>
@@ -74,7 +77,7 @@
   <link rel="stylesheet" href="assets/css/noscript.min.css?v={{ site.data.asset-hashes['assets/css/noscript.min.css'] }}" />
   <link rel="stylesheet" href="assets/css/custom.min.css?v={{ site.data.asset-hashes['assets/css/custom.min.css'] }}" />
   <link rel="stylesheet" href="/assets/css/icons.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic&display=swap">
 </noscript>
 
 <link rel="shortcut icon" href="assets/favicon.ico" />
