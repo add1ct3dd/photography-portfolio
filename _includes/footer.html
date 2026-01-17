@@ -1,4 +1,4 @@
-<!-- Scripts -->
+<!-- Core Scripts -->
 <script src="assets/js/icons.js" defer></script>
 <script src="assets/js/jquery.min.js" defer></script>
 <script src="assets/js/jquery.poptrox.modified.min.js" defer></script>
@@ -7,3 +7,36 @@
 <script src="assets/js/util.min.js" defer></script>
 <script src="assets/js/exif.min.js" defer></script>
 <script src="assets/js/main.min.js" defer></script>
+
+<!-- Structured Data - Schema.org -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "{{ site.author }}",
+  "url": "{{ site.baseurl | prepend: site.url }}",
+  "image": "{{ '/images/profile.jpg' | prepend: site.baseurl | prepend: site.url }}",
+  "jobTitle": "Photographer & Developer",
+  "description": "{{ site.footer.bio }}",
+  "sameAs": [
+    "{{ site.social_urls.twitter }}",
+    "{{ site.social_urls.instagram }}",
+    "{{ site.social_urls.github }}",
+    "{{ site.social_urls.flickr }}"
+  ]
+}
+</script>
+
+<!-- Gallery Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ImageGallery",
+  "name": "{{ site.title }}",
+  "description": "{{ site.subtitle }}",
+  "author": {
+    "@type": "Person",
+    "name": "{{ site.author }}"
+  }
+}
+</script>

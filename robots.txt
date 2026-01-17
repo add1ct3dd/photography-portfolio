@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+Allow: /images/
+Allow: /assets/
+
+# Disallow admin and sensitive paths
+Disallow: /_site/
+Disallow: /node_modules/
+Disallow: /.git/
+
+# Specify sitemap location
+Sitemap: https://matthew-evans.com/sitemap.xml
+
+# Crawl delay (optional - adjust based on your server)
+Crawl-delay: 1
+
+# Allow search engines to index images
+User-agent: Googlebot-Image
+Allow: /images/
+
+User-agent: Bingbot-Image
+Allow: /images/

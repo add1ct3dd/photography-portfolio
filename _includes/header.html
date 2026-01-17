@@ -3,8 +3,47 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 <meta name="description" content="{{ site.footer.bio }}" />
 <meta name="author" content="{{ site.author }}" />
+
+<!-- SEO Meta Tags -->
+<meta name="theme-color" content="#34a58e" />
+<meta name="keywords" content="photography, portfolio, photos, gallery" />
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<meta name="image" content="{{ '/images/profile.jpg' | prepend: site.baseurl | prepend: site.url }}" />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content="{{ site.baseurl | prepend: site.url }}" />
+<meta property="og:title" content="{{ site.title }}" />
+<meta property="og:description" content="{{ site.footer.bio }}" />
+<meta property="og:image" content="{{ '/images/profile.jpg' | prepend: site.baseurl | prepend: site.url }}" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content="en_US" />
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content="{{ site.baseurl | prepend: site.url }}" />
+<meta property="twitter:title" content="{{ site.title }}" />
+<meta property="twitter:description" content="{{ site.footer.bio }}" />
+<meta property="twitter:image" content="{{ '/images/profile.jpg' | prepend: site.baseurl | prepend: site.url }}" />
+{% if site.social_urls.twitter %}
+<meta property="twitter:creator" content="@{{ site.social_urls.twitter | split: '/' | last }}" />
+{% endif %}
+
+<!-- Canonical URL -->
+<link rel="canonical" href="{{ page.url | prepend: site.baseurl | prepend: site.url }}" />
+
+<!-- Alternate links for language versions (if applicable) -->
+<link rel="alternate" hreflang="en" href="{{ site.baseurl | prepend: site.url }}" />
+
+<!-- Web App Manifest -->
+<link rel="manifest" href="/manifest.json" />
+
+<!-- Security Headers -->
 <meta http-equiv="Content-Security-Policy"
   content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com; upgrade-insecure-requests;">
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
 
 <!-- Inline critical CSS for faster first paint -->
 <style>
@@ -13,11 +52,7 @@
   }
 </style>
 
-<!-- Preload resources -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<!-- Defer non-critical stylesheets -->
+<!-- Main stylesheets -->
 <link rel="preload" href="assets/css/main.min.css" as="style" onload="this.rel='stylesheet'">
 <link rel="preload" href="assets/css/custom.min.css" as="style" onload="this.rel='stylesheet'">
 <link rel="preload" href="/assets/css/icons.css" as="style" onload="this.rel='stylesheet'">
