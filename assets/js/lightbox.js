@@ -190,10 +190,7 @@ class DialogLightbox {
             if (typeof exifValue !== "undefined") {
                 const iconSvg = this.getIconSvg(icons, currentData.icon);
                 const tagName = currentData.tag.split(/(?=[A-Z])/).join(" ");
-                template += `<span title="${tagName}: ${exifValue}">${iconSvg} ${exifValue}</span>&nbsp;&nbsp;`;
-                if (currentData.tag === "LensModel") {
-                    template += "<br>";
-                }
+                template += `<span title="${tagName}: ${exifValue}">${iconSvg} ${exifValue}</span>`;
             }
         }
         const flickrImgUrl = img.src
