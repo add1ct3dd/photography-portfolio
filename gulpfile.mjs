@@ -6,6 +6,8 @@ import babel from 'gulp-babel';
 import uglify from 'gulp-uglify';
 import rename from 'gulp-rename';
 import filter from 'gulp-filter';
+import cleanCSS from 'clean-css';
+import { spawn } from 'child_process';
 import path from 'path';
 import del from 'del';
 import fs from 'fs';
@@ -67,6 +69,23 @@ gulp.task('sass', function () {
         .pipe(gulp.dest('./assets/css'));  // Output to the CSS directory
 });
 
+// minify standalone css files (custom-properties now merged into main.scss)
+gulp.task('minify-css', async function () {
+    const cssFiles = [];
+    
+    for (const file of cssFiles) {
+        try {
+            const input = await fsPromises.readFile(file, 'utf-8');
+            const output = new (await import('clean-css')).default().minify(input);
+            const outputFile = file.replace('.css', '.min.css');
+            await fsPromises.writeFile(outputFile, output.styles);
+            console.log(`Minified: ${outputFile}`);
+        } catch (err) {
+            console.error(`Error minifying ${file}:`, err.message);
+        }
+    }
+});
+
 // watch changes in scss files and run sass task
 gulp.task('sass:watch', function () {
     gulp.watch('./assets/sass/**/*.scss', gulp.series('sass'));
@@ -94,8 +113,35 @@ gulp.task('minify-js', function () {
         .pipe(gulp.dest('./assets/js'));
 });
 
+// compile typescript (optional - only if tsc is available)
+gulp.task('compile-ts', function (done) {
+    try {
+        const command = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+        const tsc = spawn(command, ['tsc'], { stdio: 'inherit', shell: true });
+        
+        tsc.on('close', (code) => {
+            if (code === 0) {
+                console.log('[TypeScript] Compiled successfully');
+            } else if (code === 127) {
+                console.log('[TypeScript] TypeScript not found - skipping compilation');
+            } else {
+                console.warn(`[TypeScript] Compilation exited with code ${code}`);
+            }
+            done();
+        });
+
+        tsc.on('error', (err) => {
+            console.log('[TypeScript] TypeScript not available - skipping: ' + err.message);
+            done();
+        });
+    } catch (err) {
+        console.log('[TypeScript] Skipping TypeScript compilation: ' + err.message);
+        done();
+    }
+});
+
 // build task
-gulp.task('build', gulp.series('sass', 'minify-js'));
+gulp.task('build', gulp.series('compile-ts', 'sass', 'minify-css', 'minify-js'));
 
 // resize images
 gulp.task('resize', gulp.series('resize-images'));

@@ -4,6 +4,157 @@
 @import 'libs/vendor';
 @import 'libs/breakpoints';
 
+/**
+ * Custom CSS Properties (Variables)
+ * Provides a single source of truth for design tokens
+ * Can be overridden at runtime for dynamic theming
+ */
+
+:root {
+	/* Colors - Palette */
+	--color-bg: #242629;
+	--color-bg-alt: #1f2224;
+	--color-bg-overlay: rgba(36, 38, 41, 0.75);
+	--color-bg-overlay-alt: rgba(36, 38, 41, 0.5);
+	
+	--color-fg: #a0a0a1;
+	--color-fg-bold: #ffffff;
+	--color-fg-medium: #707071;
+	--color-fg-light: #505051;
+	
+	--color-border: #36383c;
+	--color-border-bg: #34363b;
+	--color-border-bg-alt: #44464b;
+	
+	--color-accent-primary: #34a58e;
+	--color-accent-primary-hover: #2d8b76;
+	
+	/* Spacing */
+	--spacing-xs: 0.5rem;
+	--spacing-sm: 1rem;
+	--spacing-md: 2rem;
+	--spacing-lg: 3rem;
+	--spacing-xl: 4rem;
+	
+	/* Typography */
+	--font-family-base: 'Source Sans Pro', Helvetica, sans-serif;
+	--font-family-mono: 'Courier New', monospace;
+	--font-weight-light: 300;
+	--font-weight-normal: 400;
+	--font-weight-bold: 700;
+	
+	--font-size-xs: 0.75rem;
+	--font-size-sm: 0.875rem;
+	--font-size-base: 1rem;
+	--font-size-lg: 1.125rem;
+	--font-size-xl: 1.25rem;
+	--font-size-2xl: 1.5rem;
+	
+	--line-height-tight: 1.2;
+	--line-height-normal: 1.5;
+	--line-height-relaxed: 1.75;
+	
+	--letter-spacing-normal: 0.025em;
+	--letter-spacing-wide: 0.1em;
+	
+	/* Sizes */
+	--size-header: 4em;
+	--size-element-height: 2.75em;
+	--size-element-margin: 2em;
+	
+	/* Shadows */
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+	--shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+	--shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+	--shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+	
+	/* Transitions & Animations */
+	--transition-fast: 0.15s ease;
+	--transition-base: 0.2s ease;
+	--transition-slow: 0.5s ease;
+	
+	--duration-thumb: 150ms;
+	--duration-transition: 200ms;
+	--duration-header: 1s;
+	--duration-panel: 500ms;
+	--duration-modal: 500ms;
+	
+	/* Breakpoints (informational) */
+	--breakpoint-xsmall: 480px;
+	--breakpoint-small: 737px;
+	--breakpoint-medium: 980px;
+	--breakpoint-large: 1280px;
+	--breakpoint-xlarge: 1680px;
+	
+	/* Z-index scale */
+	--z-base: 1;
+	--z-dropdown: 100;
+	--z-overlay: 1000;
+	--z-modal: 10000;
+	--z-panel: 10001;
+	
+	/* Border radius */
+	--radius-none: 0;
+	--radius-sm: 0.25rem;
+	--radius-md: 0.5rem;
+	--radius-lg: 1rem;
+	
+	/* Focus styles for accessibility */
+	--focus-outline: 2px solid var(--color-accent-primary);
+	--focus-offset: 2px;
+}
+
+/* Loading state styles */
+.skeleton {
+	background: linear-gradient(
+		90deg,
+		var(--color-bg-alt) 0%,
+		var(--color-border-bg) 50%,
+		var(--color-bg-alt) 100%
+	);
+	background-size: 200% 100%;
+	animation: skeleton-loading 1.5s infinite;
+}
+
+@include keyframes(skeleton-loading) {
+	0% {
+		background-position: 200% 0;
+	}
+	100% {
+		background-position: -200% 0;
+	}
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}
+
+/* Dark mode support (future-proofing) */
+@media (prefers-color-scheme: dark) {
+	:root {
+		/* Colors already set for dark mode, no changes needed */
+	}
+}
+
+/* Light mode fallback */
+@media (prefers-color-scheme: light) {
+	:root {
+		--color-bg: #f5f5f5;
+		--color-bg-alt: #eeeeee;
+		--color-fg: #333333;
+		--color-fg-bold: #000000;
+		--color-fg-medium: #666666;
+		--color-fg-light: #999999;
+	}
+}
+
 /*
 	Multiverse by HTML5 UP
 	html5up.net | @ajlkn
@@ -40,13 +191,9 @@
 
 // Component.
 
-	@import 'components/button';
-	@import 'components/form';
 	@import 'components/icon';
 	@import 'components/list';
-	@import 'components/actions';
 	@import 'components/icons';
-	@import 'components/table';
 	@import 'components/panel';
 	@import 'components/poptrox-popup';
 

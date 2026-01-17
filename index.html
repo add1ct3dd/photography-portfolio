@@ -7,8 +7,47 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 <meta name="description" content="I am a developer and a tech aficionado from the United Kingdom. Here's a selection of a few of my favourite photos, with so many more on my Flickr." />
 <meta name="author" content="Matthew Evans" />
+
+<!-- SEO Meta Tags -->
+<meta name="theme-color" content="#34a58e" />
+<meta name="keywords" content="photography, portfolio, photos, gallery" />
+<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+<meta name="image" content="/images/profile.jpg" />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content="" />
+<meta property="og:title" content="Photography by Matthew Evans" />
+<meta property="og:description" content="I am a developer and a tech aficionado from the United Kingdom. Here's a selection of a few of my favourite photos, with so many more on my Flickr." />
+<meta property="og:image" content="/images/profile.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content="en_US" />
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content="" />
+<meta property="twitter:title" content="Photography by Matthew Evans" />
+<meta property="twitter:description" content="I am a developer and a tech aficionado from the United Kingdom. Here's a selection of a few of my favourite photos, with so many more on my Flickr." />
+<meta property="twitter:image" content="/images/profile.jpg" />
+
+<meta property="twitter:creator" content="@add1ct3dd" />
+
+
+<!-- Canonical URL -->
+<link rel="canonical" href="/" />
+
+<!-- Alternate links for language versions (if applicable) -->
+<link rel="alternate" hreflang="en" href="" />
+
+<!-- Web App Manifest -->
+<link rel="manifest" href="/manifest.json" />
+
+<!-- Security Headers -->
 <meta http-equiv="Content-Security-Policy"
   content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com; upgrade-insecure-requests;">
+<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<meta http-equiv="x-ua-compatible" content="ie=edge" />
 
 <!-- Inline critical CSS for faster first paint -->
 <style>
@@ -17,11 +56,7 @@
   }
 </style>
 
-<!-- Preload resources -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<!-- Defer non-critical stylesheets -->
+<!-- Main stylesheets -->
 <link rel="preload" href="assets/css/main.min.css" as="style" onload="this.rel='stylesheet'">
 <link rel="preload" href="assets/css/custom.min.css" as="style" onload="this.rel='stylesheet'">
 <link rel="preload" href="/assets/css/icons.css" as="style" onload="this.rel='stylesheet'">
@@ -68,6 +103,12 @@
 
     <!-- Main Gallery -->
     <main id="main" data-exif='[{"tag": "Model", "icon": "camera-retro"}, {"tag": "LensModel", "icon": "video"}, {"tag": "FNumber", "icon": "dot-circle"}, {"tag": "FocalLength", "icon": "signal"}, {"tag": "ExposureTime", "icon": "clock"}, {"tag": "ISOSpeedRatings", "icon": "info-circle"}]' role="main" aria-label="Photography Gallery">
+        
+        
+        
+        
+        
+        
         
         
         
@@ -1179,7 +1220,7 @@
 }
 </script>
 
-  <!-- Scripts -->
+  <!-- Core Scripts -->
 <script src="assets/js/icons.js" defer></script>
 <script src="assets/js/jquery.min.js" defer></script>
 <script src="assets/js/jquery.poptrox.modified.min.js" defer></script>
@@ -1188,6 +1229,39 @@
 <script src="assets/js/util.min.js" defer></script>
 <script src="assets/js/exif.min.js" defer></script>
 <script src="assets/js/main.min.js" defer></script>
+
+<!-- Structured Data - Schema.org -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Matthew Evans",
+  "url": "",
+  "image": "/images/profile.jpg",
+  "jobTitle": "Photographer & Developer",
+  "description": "I am a developer and a tech aficionado from the United Kingdom. Here's a selection of a few of my favourite photos, with so many more on my Flickr.",
+  "sameAs": [
+    "https://www.twitter.com/add1ct3dd",
+    "https://www.instagram.com/add1ct3dd",
+    "https://www.github.com/add1ct3dd",
+    "https://www.flickr.com/people/matthew-evans"
+  ]
+}
+</script>
+
+<!-- Gallery Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ImageGallery",
+  "name": "Photography by Matthew Evans",
+  "description": "See the world through my eyes!",
+  "author": {
+    "@type": "Person",
+    "name": "Matthew Evans"
+  }
+}
+</script>
 </body>
 
 </html>
