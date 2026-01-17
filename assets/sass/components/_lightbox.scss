@@ -100,10 +100,11 @@
   background: rgba(30, 30, 30, 0.95);
   padding: 12px 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  min-height: auto;
+  min-height: 44px;
   max-height: none;
-  overflow-y: auto;
+  overflow: visible;
   flex-shrink: 0;
+  flex-grow: 0;
 }
 
 .lightbox-exif {
@@ -282,7 +283,7 @@
   }
 
   .lightbox-image-container {
-    min-height: 250px;
+    min-height: 200px;
   }
 
   .lightbox-close,
@@ -295,11 +296,13 @@
 
   .lightbox-info {
     padding: 8px 12px;
+    overflow: visible;
   }
 
   .lightbox-exif {
     font-size: 0.85em;
     gap: 8px;
+    overflow: visible;
   }
 
   .lightbox-exif span {
@@ -310,6 +313,46 @@
     width: 100%;
     justify-content: center;
     flex-shrink: 0;
+  }
+}
+
+/* Landscape mobile - very limited vertical space */
+@media (max-height: 500px) and (orientation: landscape) {
+  .lightbox-dialog {
+    max-height: 100vh;
+  }
+
+  .lightbox-image-container {
+    min-height: 150px;
+  }
+
+  .lightbox-info {
+    padding: 6px 10px;
+    position: relative;
+    overflow: visible;
+  }
+
+  .lightbox-exif {
+    font-size: 0.8em;
+    gap: 6px;
+  }
+
+  .lightbox-exif span {
+    display: none;
+  }
+
+  .lightbox-exif a.flickr-link {
+    width: auto;
+    padding: 4px 10px;
+    font-size: 0.85em;
+  }
+
+  .lightbox-close,
+  .lightbox-prev,
+  .lightbox-next {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
   }
 }
 
