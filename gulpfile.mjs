@@ -2,6 +2,7 @@ import gulp from 'gulp';
 import sharp from 'sharp';
 import * as dartSass from 'sass';
 import gulpSass from 'gulp-sass';
+import babel from 'gulp-babel';
 import uglify from 'gulp-uglify';
 import rename from 'gulp-rename';
 import filter from 'gulp-filter';
@@ -13,11 +14,12 @@ import { promises as fsPromises } from 'fs';
 const sass = gulpSass(dartSass);
 
 gulp.task('delete', function () {
-    return del(['images/*.*']);
+    return;
+    // return del(['images/fulls/*', 'images/thumbs/*']);
 });
 
 gulp.task('resize-images', async function () {
-    const imageDir = 'images';
+    const sourceDir = 'images/source';
     const fullsDir = 'images/fulls';
     const thumbsDir = 'images/thumbs';
 
@@ -25,33 +27,68 @@ gulp.task('resize-images', async function () {
     await fsPromises.mkdir(fullsDir, { recursive: true });
     await fsPromises.mkdir(thumbsDir, { recursive: true });
 
-    // Get all image files
-    const files = await fsPromises.readdir(imageDir);
+    // Get all image files from source directory
+    const files = await fsPromises.readdir(sourceDir);
     const imageFiles = files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f));
 
     for (const file of imageFiles) {
-        const inputPath = path.join(imageDir, file);
-        const fullOutputPath = path.join(fullsDir, file);
-        const thumbOutputPath = path.join(thumbsDir, file);
-
+        const inputPath = path.join(sourceDir, file);
+        const baseName = path.parse(file).name;
+        
         try {
-            // Resize for fulls - high quality (92) with metadata preserved
+            // Resize for fulls - maximum quality for photography portfolio (95 JPEG, 94 WebP, 90 AVIF)
             await sharp(inputPath)
                 .resize(3440, null, { withoutEnlargement: true })
                 .withMetadata()
-                .jpeg({ quality: 92, progressive: true })
-                .toFile(fullOutputPath);
+                .jpeg({ quality: 95, progressive: true })
+                .toFile(path.join(fullsDir, `${baseName}.jpg`));
 
-            // Resize for thumbs - good quality (85) with metadata preserved
+            // Generate WebP version for fulls - very high quality
+            await sharp(inputPath)
+                .resize(3440, null, { withoutEnlargement: true })
+                .withMetadata()
+                .webp({ quality: 94 })
+                .toFile(path.join(fullsDir, `${baseName}.webp`));
+
+            // Generate AVIF version for fulls (modern format, very efficient at high quality)
+            try {
+                await sharp(inputPath)
+                    .resize(3440, null, { withoutEnlargement: true })
+                    .withMetadata()
+                    .avif({ quality: 90 })
+                    .toFile(path.join(fullsDir, `${baseName}.avif`));
+            } catch (err) {
+                console.warn(`AVIF generation skipped for ${file}: ${err.message}`);
+            }
+
+            // Resize for thumbs - high quality (90 JPEG, 92 WebP, 88 AVIF)
             await sharp(inputPath)
                 .resize(840, null, { withoutEnlargement: true })
                 .withMetadata()
-                .jpeg({ quality: 85, progressive: true })
-                .toFile(thumbOutputPath);
+                .jpeg({ quality: 90, progressive: true })
+                .toFile(path.join(thumbsDir, `${baseName}.jpg`));
 
-            console.log(`Resized: ${file}`);
+            // Generate WebP version for thumbs - high quality
+            await sharp(inputPath)
+                .resize(840, null, { withoutEnlargement: true })
+                .withMetadata()
+                .webp({ quality: 92 })
+                .toFile(path.join(thumbsDir, `${baseName}.webp`));
+
+            // Generate AVIF version for thumbs - very efficient at high quality
+            try {
+                await sharp(inputPath)
+                    .resize(840, null, { withoutEnlargement: true })
+                    .withMetadata()
+                    .avif({ quality: 88 })
+                    .toFile(path.join(thumbsDir, `${baseName}.avif`));
+            } catch (err) {
+                console.warn(`AVIF generation skipped for ${file} thumbnail: ${err.message}`);
+            }
+
+            console.log(`Generated: ${baseName} (JPEG, WebP, AVIF)`);
         } catch (err) {
-            console.error(`Error resizing ${file}:`, err.message);
+            console.error(`Error processing ${file}:`, err.message);
         }
     }
 });
@@ -71,7 +108,7 @@ gulp.task('sass:watch', function () {
     gulp.watch('./assets/sass/**/*.scss', gulp.series('sass'));
 });
 
-// minify js
+// transpile and minify js with babel
 gulp.task('minify-js', function () {
     return gulp.src('./assets/js/**/*.js')
         .pipe(filter(function (file) {
@@ -80,6 +117,10 @@ gulp.task('minify-js', function () {
 
             // Skip files that are already minified
             return !basename.endsWith('.min');
+        }))
+        .pipe(babel({
+            presets: [['@babel/preset-env', { modules: false }]],
+            compact: true
         }))
         .pipe(uglify())
         .pipe(rename(function (path) {
@@ -93,7 +134,7 @@ gulp.task('minify-js', function () {
 gulp.task('build', gulp.series('sass', 'minify-js'));
 
 // resize images
-gulp.task('resize', gulp.series('resize-images', 'delete'));
+gulp.task('resize', gulp.series('resize-images'));
 
 // default task
 gulp.task('default', gulp.series('build', 'resize'));
