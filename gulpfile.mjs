@@ -14,7 +14,6 @@ import fs from 'fs';
 import { promises as fsPromises } from 'fs';
 import crypto from 'crypto';
 import gzip from 'gulp-gzip';
-import brotli from 'gulp-brotli';
 
 const sass = gulpSass(dartSass);
 
@@ -332,21 +331,11 @@ gulp.task('precompress:gzip', () => {
 });
 
 // Precompress assets with brotli (quality 11 - maximum)
-gulp.task('precompress:brotli', () => {
-    return gulp.src(['assets/**/*.{js,css,svg}', '_site/**/*.{js,css,svg}'], { allowEmpty: true })
-        .pipe(brotli.compress({ quality: 11 }))
-        .pipe(gulp.dest((file) => file.base))
-        .on('end', () => {
-            console.log('✓ Brotli compression complete\n');
-        });
-});
-
-// build task
+gulbuild task
 gulp.task('build', gulp.series('compile-ts', gulp.parallel('sass', 'minify-js'), 'minify-css', 'generate-hashes'));
 
 // build with precompression for production
-gulp.task('build:prod', gulp.series('build', gulp.parallel('precompress:gzip', 'precompress:brotli')));
-
+gulp.task('build:prod', gulp.series('build', 'precompress:gzip'
 // resize images (incremental - only new images)
 gulp.task('resize', gulp.series('resize-images'));
 
