@@ -301,7 +301,7 @@ class DialogLightbox {
       .split("_")[0]
       .split("/images/fulls/")[1];
     const flickrIcon = this.getIconSvg(icons, "flickr");
-    template += `<a target="_blank" class="flickr-link" href="https://flickr.com/photos/matthew-evans/${flickrImgUrl}/" style="float:right;">${flickrIcon} View on Flickr</a>`;
+    template += `<a target="_blank" class="flickr-link" href="https://flickr.com/photos/matthew-evans/${flickrImgUrl}/">${flickrIcon} View on Flickr</a>`;
 
     return template;
   }

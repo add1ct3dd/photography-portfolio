@@ -114,6 +114,7 @@
   flex-wrap: wrap;
   gap: 12px;
   align-items: center;
+  justify-content: space-between;
 }
 
 .lightbox-exif span {
@@ -155,11 +156,31 @@
   flex-shrink: 0;
   white-space: nowrap;
   margin-left: auto;
+  min-width: max-content;
 }
 
 .lightbox-exif a.flickr-link:hover {
   background: rgba(243, 156, 18, 0.2);
   color: #ffb84d;
+}
+
+/* Mobile responsive - ensure button doesn't wrap on small screens */
+@media (max-width: 480px) {
+  .lightbox-exif {
+    justify-content: flex-start;
+    gap: 8px;
+  }
+
+  .lightbox-exif span {
+    font-size: 0.85em;
+    padding: 3px 6px;
+  }
+
+  .lightbox-exif a.flickr-link {
+    margin-left: auto;
+    padding: 3px 6px;
+    font-size: 0.85em;
+  }
 }
 
 /* Navigation and Control Buttons */
