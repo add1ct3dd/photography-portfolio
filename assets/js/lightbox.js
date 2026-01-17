@@ -167,7 +167,7 @@ class DialogLightbox {
             if (img && img.src) {
                 const tempImg = new Image();
                 tempImg.onload = () => {
-                    window.EXIF.getData(tempImg, () => {
+                    window.EXIF?.getData(tempImg, () => {
                         const markup = this.getExifDataMarkup(tempImg, imgName);
                         this.exifDatas[imgName] = markup;
                         container.innerHTML = markup;
@@ -192,7 +192,7 @@ class DialogLightbox {
         let template = "";
         for (const current in this.exifConfig) {
             const currentData = this.exifConfig[current];
-            const exifValue = EXIF.getTag(img, currentData.tag);
+            const exifValue = EXIF?.getTag(img, currentData.tag);
             if (typeof exifValue !== "undefined") {
                 const iconSvg = this.getIconSvg(icons, currentData.icon);
                 const tagName = currentData.tag.split(/(?=[A-Z])/).join(" ");
@@ -306,4 +306,3 @@ if (document.readyState === "loading") {
 else {
     new DialogLightbox(".thumb > a.image");
 }
-//# sourceMappingURL=lightbox.js.map

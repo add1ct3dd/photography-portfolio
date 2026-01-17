@@ -63,4 +63,3 @@ function initBrowserDetection() {
     browser.mobile = mobilePatterns.some(pattern => ua.match(pattern));
 }
 initBrowserDetection();
-//# sourceMappingURL=browser.js.map

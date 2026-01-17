@@ -8,7 +8,7 @@
       "DOM.Iterable"
     ],
     "declaration": true,
-    "declarationMap": true,
+    "declarationMap": false,
     "outDir": "./assets/js",
     "rootDir": "./assets/ts",
     "strict": true,
@@ -20,10 +20,7 @@
     "allowSyntheticDefaultImports": true,
     "removeComments": true,
     "noEmit": false,
-    "sourceMap": true,
-    "types": [
-      "node"
-    ]
+    "sourceMap": false
   },
   "include": [
     "assets/ts/**/*.ts"
