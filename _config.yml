@@ -5,6 +5,16 @@ image_fulls_loc: "/images/fulls"
 image_thumbs_loc: "/images/thumbs"
 google_analytics: "G-Y1MLKS6G5P"
 
+# HTML Compression - removes whitespace, comments, and unused HTML tags
+compress_html:
+  clippings: all
+  comments: all
+  endings: all
+  profile: false
+  blanklines: false
+  ignore:
+    envs: []
+
 # UI configs
 title: "Photography by Matthew Evans"
 subtitle: "See the world through my eyes!"
