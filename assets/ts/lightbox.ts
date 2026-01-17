@@ -170,6 +170,8 @@ class DialogLightbox {
     const handleTouchEnd = (_e: TouchEvent) => {
       if (_e.touches.length < 2) {
         this.isPinching = false;
+        // Preserve zoom level for next pinch gesture
+        this.lastScale = this.currentScale;
       }
       // Reset if zoomed out completely
       if (this.currentScale <= 1) {
