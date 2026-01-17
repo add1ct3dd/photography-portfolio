@@ -3,11 +3,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 <meta name="description" content="{{ site.footer.bio }}" />
 <meta name="author" content="{{ site.author }}" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com; upgrade-insecure-requests;">
+<meta http-equiv="Content-Security-Policy"
+  content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com; upgrade-insecure-requests;">
 
 <!-- Inline critical CSS for faster first paint -->
 <style>
-{% include critical.css %}
+  {
+    % include critical.css %
+  }
 </style>
 
 <!-- Preload resources -->
@@ -18,7 +21,8 @@
 <link rel="preload" href="assets/css/main.min.css" as="style" onload="this.rel='stylesheet'">
 <link rel="preload" href="assets/css/custom.min.css" as="style" onload="this.rel='stylesheet'">
 <link rel="preload" href="/assets/css/icons.css" as="style" onload="this.rel='stylesheet'">
-<link rel="preload" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic" as="style" onload="this.rel='stylesheet'">
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic"
+  as="style" onload="this.rel='stylesheet'">
 
 <!-- Fallback for no-JS -->
 <noscript>
@@ -36,7 +40,7 @@
 <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
+  function gtag() { dataLayer.push(arguments); }
   gtag('js', new Date());
   gtag('config', '{{ site.google_analytics }}');
 </script>

@@ -2,91 +2,91 @@
 
 /* Icon base styling */
 .icon {
-    display: inline-block;
-    vertical-align: middle;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 /* Inline SVG icons */
 svg.icon-inline {
-    display: inline-block;
-    vertical-align: -0.125em;
-    fill: currentColor;
-    width: 1em;
-    height: 1em;
-    margin-right: 0.25em;
+  display: inline-block;
+  vertical-align: -0.125em;
+  fill: currentColor;
+  width: 1em;
+  height: 1em;
+  margin-right: 0.25em;
 }
 
 /* Social icons styling */
 .icon.brands {
-    display: inline-block;
+  display: inline-block;
 }
 
 .icon.brands a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 3.5em;
-    height: 3.5em;
-    box-shadow: inset 0 0 0 1px #ccc;
-    border-radius: 100%;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    font-size: 1.5em;
-    color: #555;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5em;
+  height: 3.5em;
+  box-shadow: inset 0 0 0 1px #ccc;
+  border-radius: 100%;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-size: 1.5em;
+  color: #555;
 }
 
 .icon.brands a:hover {
-    background-color: #555;
-    box-shadow: inset 0 0 0 1px #555;
-    color: white;
+  background-color: #555;
+  box-shadow: inset 0 0 0 1px #555;
+  color: white;
 }
 
 .icon.brands svg {
-    width: 1em;
-    height: 1em;
-    fill: currentColor;
-    margin: 0;
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  margin: 0;
 }
 
 /* Text label styling for screen readers */
 .icon span.label {
-    display: none;
+  display: none;
 }
 
 /* Navigation link icons */
 nav .icon svg {
-    margin-right: 0.5em;
+  margin-right: 0.5em;
 }
 
 /* Fallback for any remaining FA classes */
 .fa::before,
 .fab::before,
 .far::before {
-    content: "";
+  content: "";
 }
 
 .fa,
 .fab,
 .far {
-    font-family: inherit;
-    font-style: normal;
-    font-variant: normal;
-    font-weight: inherit;
-    text-rendering: auto;
-    line-height: 1;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  font-family: inherit;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: inherit;
+  text-rendering: auto;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* EXIF icon styling */
 span.icon-inline {
-    display: inline-flex;
-    align-items: center;
-    margin-right: 0.5em;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.5em;
 }
 
 span.icon-inline svg {
-    width: 1.3em;
-    height: 1.3em;
-    min-width: 1.3em;
+  width: 1.3em;
+  height: 1.3em;
+  min-width: 1.3em;
 }

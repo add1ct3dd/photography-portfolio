@@ -12,12 +12,29 @@ html {
   box-sizing: border-box;
 }
 
-*, *:before, *:after {
+*,
+*:before,
+*:after {
   box-sizing: inherit;
 }
 
-html, body, div, span, p, a, h1, h2, h3, h4, h5, h6, 
-header, nav, main, footer, section {
+html,
+body,
+div,
+span,
+p,
+a,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+header,
+nav,
+main,
+footer,
+section {
   margin: 0;
   padding: 0;
   border: 0;
@@ -47,7 +64,12 @@ a:hover {
   color: var(--color-accent) !important;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: #fff;
   font-weight: 400;
   letter-spacing: 0.05em;

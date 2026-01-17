@@ -184,7 +184,7 @@
 	$main.children(".thumb").each(function () {
 		var $this = $(this),
 			$image = $this.find(".image"),
-			$image_img = $image.children("img"),
+			$image_img = $image.find("img"),
 			x;
 
 		// No image? Bail.
@@ -194,8 +194,16 @@
 		// This sets the background of the "image" <span> to the image pointed to by its child
 		// <img> (which is then hidden). Gives us way more flexibility.
 
-		// Set background.
-		$image.css("background-image", "url(" + $image_img.attr("src") + ")");
+		// Handle both lazy-loaded (data-src) and regular (src) images
+		var setSrcBackground = function() {
+			var src = $image_img.attr("src");
+			if (src && src !== 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7') {
+				$image.css("background-image", "url(" + src + ")");
+			}
+		};
+
+		// Set initial background if src exists, or wait for lazy load
+		setSrcBackground();
 
 		// Set background position.
 		if ((x = $image_img.data("position"))) $image.css("background-position", x);
@@ -203,27 +211,83 @@
 		// Hide original img.
 		$image_img.hide();
 
-		// EXIF data
-		$image_img[0].addEventListener("load", function () {
-			EXIF.getData($image_img[0], function () {
-				exifDatas[$image_img.data('name')] = getExifDataMarkup(this);
-			});
-		});
+		// EXIF data - wait for image to load via lazy loading
+		var attachExifListener = function() {
+			var handlerCalled = false;
+			
+			var loadHandler = function () {
+				if (handlerCalled) return; // Prevent duplicate calls
+				handlerCalled = true;
+				
+				EXIF.getData($image_img[0], function () {
+					exifDatas[$image_img.data('name')] = getExifDataMarkup(this);
+				});
+				// Also set background when image loads
+				setSrcBackground();
+			};
+
+			// Attach load listeners first - these will catch all async-loaded images
+			$image_img.on("load", loadHandler);
+			$image_img[0].addEventListener("load", loadHandler);
+			
+			// Check if image is already complete with a real src (cached/synchronous)
+			var checkImmediate = function() {
+				var src = $image_img.attr("src");
+				var isPlaceholder = src === 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+				
+				if ($image_img[0].complete && src && !isPlaceholder) {
+					// Use Promise microtask instead of timeout to defer EXIF reading
+					// This ensures image data is fully decoded before EXIF reads it
+					Promise.resolve().then(loadHandler);
+				}
+			};
+			
+			// Check immediately
+			checkImmediate();
+			
+			// Watch for src attribute changes when lazy loader sets real image
+			if ('MutationObserver' in window) {
+				var observer = new MutationObserver(function(mutations) {
+					mutations.forEach(function(mutation) {
+						if (mutation.attributeName === 'src') {
+							// Src changed - check if already complete, otherwise load event will fire
+							checkImmediate();
+						}
+					});
+				});
+				
+				observer.observe($image_img[0], {
+					attributes: true,
+					attributeFilter: ['src']
+				});
+			}
+		};
+
+		// Attach EXIF listener after lazyload.js has initialized
+		// Delay until DOMContentLoaded to ensure lazyload.js has set up all observers
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', attachExifListener);
+		} else {
+			// Already past DOMContentLoaded, defer to next microtask to be safe
+			Promise.resolve().then(attachExifListener);
+		}
 	});
 
 	// Poptrox.
 	$main.poptrox({
 		baseZIndex: 20000,
 		caption: function ($a) {
-			var $image_img = $a.children('img');
+			var $image_img = $a.find('img');
 			var imgName = $image_img.data('name');
 			var data = exifDatas[imgName];
 			
-			if (data === undefined) {
+			if (data === undefined && $image_img.length > 0) {
 				var img = $image_img[0];
-				EXIF.getData(img, function () {
-					exifDatas[imgName] = getExifDataMarkup(this);
-				});
+				if (img && img.src) {
+					EXIF.getData(img, function () {
+						exifDatas[imgName] = getExifDataMarkup(this);
+					});
+				}
 			}
 			return data !== undefined ? '<p>' + data + '</p>' : ' ';
 		},
