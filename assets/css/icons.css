@@ -7,14 +7,6 @@
 }
 
 /* Inline SVG icons */
-svg.icon-inline {
-  display: inline-block;
-  vertical-align: -0.125em;
-  fill: currentColor;
-  width: 1em;
-  height: 1em;
-  margin-right: 0.25em;
-}
 
 /* Social icons styling */
 .icon.brands {
@@ -55,28 +47,15 @@ svg.icon-inline {
 
 /* Navigation link icons */
 nav .icon svg {
+  display: inline;
+  vertical-align: -0.15em;
   margin-right: 0.5em;
+  width: 1.1em;
+  height: 1.1em;
+  min-width: 1.1em;
 }
 
 /* Fallback for any remaining FA classes */
-.fa::before,
-.fab::before,
-.far::before {
-  content: "";
-}
-
-.fa,
-.fab,
-.far {
-  font-family: inherit;
-  font-style: normal;
-  font-variant: normal;
-  font-weight: inherit;
-  text-rendering: auto;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
 
 /* EXIF icon styling */
 span.icon-inline {
