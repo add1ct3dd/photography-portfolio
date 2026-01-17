@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "sourceMap": true,
+    "declarationMap": true
+  },
+  "include": [
+    "assets/ts/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "assets/js/**/*.js"
+  ]
+}

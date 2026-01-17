@@ -205,7 +205,7 @@ gulp.task('resize-images-full', async function () {
  */
 gulp.task('sass', function () {
     return gulp.src('./assets/sass/**/*.scss')  // Target all .scss files
-        .pipe(sass.sync({ 
+        .pipe(sass.sync({
             style: 'compressed',  // gulp-sass 6.0.0+ uses 'style', not 'outputStyle'
             quietDeps: true,  // Suppress warnings from dependencies
             silenceDeprecations: ['import']  // Suppress @import deprecation warnings
@@ -353,20 +353,25 @@ gulp.task('precompress:gzip', () => {
 });
 
 // minify HTML in the built site
+/**
+ * Minifies HTML in the built Jekyll site using html-minifier-terser
+ * (Replaces vulnerable html-minifier package)
+ * Removes comments, collapses whitespace, and minifies inline CSS/JS
+ */
 gulp.task('minify-html', async () => {
     const htmlFiles = await fsPromises.readdir('_site', { recursive: true });
-    const HtmlMinifier = (await import('html-minifier')).minify;
-    
+    const { minify } = await import('html-minifier-terser');
+
     for (const file of htmlFiles) {
         if (!file.endsWith('.html')) continue;
-        
+
         const filePath = path.join('_site', file);
         const stats = await fsPromises.stat(filePath);
         if (!stats.isFile()) continue;
-        
+
         try {
             const input = await fsPromises.readFile(filePath, 'utf-8');
-            const output = HtmlMinifier(input, {
+            const output = await minify(input, {
                 removeComments: true,
                 collapseWhitespace: true,
                 minifyCSS: true,

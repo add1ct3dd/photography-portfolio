@@ -13,7 +13,6 @@ breakpoints({
 });
 
 const body = document.body;
-const wrapper = document.getElementById("wrapper");
 
 // Hack: Enable IE workarounds.
 if (browser.name == "ie") body.classList.add("ie");
@@ -72,7 +71,7 @@ panels.forEach((panel) => {
 	panel.appendChild(closer);
 
 	// Closer.
-	closer.addEventListener("click", function (event) {
+	closer.addEventListener("click", function () {
 		hidePanel(panel, toggles);
 	});
 

@@ -48,11 +48,166 @@ Then open [http://localhost:4000](http://localhost:4000) in your browser.
 ```bash
 npm run build       # Build CSS + Jekyll site
 npm run build:css   # Build CSS only (Gulp: TypeScript, SASS, minify)
-npm run dev         # Start development server with watch mode
-npm run watch       # Watch SASS changes
-npm run serve       # Start Jekyll development server
-npm run resize      # Resize images and generate thumbnails
+npm run build:prod  # Build production with HTML minification and Gzip compression
+npm run dev         # Start development server with watch mode (SASS + Jekyll)
+npm run watch       # Watch SASS changes and recompile
+npm run serve       # Start Jekyll development server (http://localhost:4000)
+npm run resize      # Generate responsive image variants (Sharp)
+npm run resize:full # Full regeneration of all responsive images
+npm run lint        # Run ESLint on TypeScript and JavaScript files
 ```
+
+## Development Workflow
+
+### Local Development
+```bash
+# Install dependencies
+npm install
+
+# Start development server with live reloading
+npm run dev
+
+# In another terminal, you can watch individual assets
+npm run watch
+```
+
+The dev server automatically:
+- Recompiles TypeScript and SASS on file changes
+- Regenerates the Jekyll site
+- Enables source maps for easier debugging (see `tsconfig.dev.json`)
+- Runs on http://localhost:4000
+
+### Building for Production
+```bash
+# Production build with all optimizations
+npm run build:prod
+```
+
+This runs:
+1. **TypeScript compilation** - Compiles TS to minified ES2020 JavaScript
+2. **SASS compilation** - Compiles SCSS to compressed CSS
+3. **JavaScript minification** - Transpiles and minifies with Babel + UglifyJS
+4. **CSS minification** - Minifies CSS files
+5. **Asset hashing** - Generates cache-busting hashes for CSS/JS
+6. **HTML minification** - Minifies Jekyll output HTML (using html-minifier-terser)
+7. **Gzip compression** - Pre-compresses assets for server delivery
+
+### Adding New Images
+
+The project uses **Sharp** for responsive image generation:
+
+```bash
+# 1. Add your high-resolution images to images/source/
+# 2. Run the resize task
+npm run resize
+
+# This generates responsive variants:
+# - Thumbnails: 200px, 400px, 840px widths
+# - Full images: 600px, 1200px, 2400px, 3440px widths
+# - Formats: JPEG (baseline), WebP (25-35% smaller), AVIF (30-40% smaller)
+```
+
+Images are organized in:
+```
+images/
+├── source/              # Original high-res images (not committed)
+├── thumbs/
+│   ├── avif/           # WebP and AVIF variants
+│   └── webp/
+└── fulls/
+    ├── avif/
+    └── webp/
+```
+
+### Configuration
+
+#### Build Configuration (gulpfile.mjs)
+- **TypeScript**: Compiles assets/ts → assets/js (ES2020, strict mode)
+- **SASS**: assets/sass → assets/css (compressed output)
+- **Babel**: Transpiles modern JS to ES2020 compatible code
+- **Sharp**: Responsive image generation with 3 formats
+
+Key TypeScript settings in `tsconfig.json`:
+```json
+{
+  "compilerOptions": {
+    "target": "ES2020",           // Modern browser target
+    "strict": true,               // Full type checking
+    "sourceMap": false,           // Disabled in production
+    "declaration": true,          // Generate .d.ts files
+    "outDir": "./assets/js"       // Output directory
+  }
+}
+```
+
+For development with source maps, use `tsconfig.dev.json`:
+```bash
+# Source maps are enabled for debugging
+npx tsc -p tsconfig.dev.json
+```
+
+#### Jekyll Configuration (_config.yml)
+- Build settings and site metadata
+- Permalink structure
+- Markdown rendering options
+- Plugin configuration
+
+#### SASS Architecture (assets/sass/)
+```
+sass/
+├── main.scss              # Main stylesheet (@import all modules)
+├── custom.scss            # Custom overrides and footer styling
+├── noscript.scss          # No-JavaScript fallback styles
+├── base/                  # Reset, typography, page layout
+├── components/            # Reusable components (icon, panel, lightbox, etc.)
+├── layout/                # Page structure (header, footer, main, wrapper)
+└── libs/                  # Variables, functions, mixins, breakpoints
+```
+
+## Build Performance
+
+Current optimizations:
+- **CSS**: 86% smaller (4.9 KB vs 33.7 KB template)
+- **JavaScript**: 77.7% smaller (31.68 KB vs 142.4 KB template)
+- **Images**: Responsive variants in WebP/AVIF (25-40% smaller than JPEG)
+- **Caching**: Asset hashes for long-term cache busting
+- **Compression**: Gzip pre-compression for web servers
+
+## Quality Assurance
+
+### Linting
+```bash
+npm run lint
+```
+
+Checks:
+- ESLint (@eslint/js) for JavaScript code quality
+- TypeScript strict mode type checking
+- Prettier formatting (configured in .prettierrc)
+
+### Type Safety
+- Full TypeScript with JSDoc type hints in gulpfile.mjs
+- Type definitions installed for all major dependencies
+- Strict mode enabled to catch common errors
+
+### Security
+- Replaced vulnerable html-minifier with html-minifier-terser
+- Regular npm audit to identify vulnerabilities
+- No untrusted dependencies in build pipeline
+
+## Technology Stack
+
+| Layer            | Technology                 | Purpose                             |
+| ---------------- | -------------------------- | ----------------------------------- |
+| **Static Site**  | Jekyll 4.x                 | Fast, secure static site generation |
+| **Styling**      | SASS 1.97                  | Preprocessor for organized CSS      |
+| **JavaScript**   | TypeScript 5.3             | Type-safe development               |
+| **Build**        | Gulp 4                     | Task orchestration                  |
+| **Images**       | Sharp 0.34                 | Responsive image generation         |
+| **Optimization** | Babel, UglifyJS, clean-css | Transpilation and minification      |
+| **Linting**      | ESLint, Prettier           | Code quality                        |
+
+
 
 ## Credits & Attribution
 
