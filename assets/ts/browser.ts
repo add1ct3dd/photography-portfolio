@@ -27,7 +27,7 @@ const browser: BrowserInfo = {
   canUse(feature: string): boolean {
     const div = document.createElement('div');
     const style = div.style;
-    
+
     // Direct property check
     if (feature in style) {
       return true;
@@ -36,7 +36,7 @@ const browser: BrowserInfo = {
     // Vendor prefixes
     const prefixes = ['Moz', 'Webkit', 'O', 'ms'];
     const capitalizedFeature = feature.charAt(0).toUpperCase() + feature.slice(1);
-    
+
     return prefixes.some(prefix => `${prefix}${capitalizedFeature}` in style);
   }
 };
@@ -46,7 +46,7 @@ const browser: BrowserInfo = {
  */
 function initBrowserDetection(): void {
   const ua = navigator.userAgent;
-  
+
   // Detect browser from UA (fallback for older detection needs)
   const browserPatterns: Array<[string, RegExp]> = [
     ['firefox', /Firefox\/([0-9\.]+)/],

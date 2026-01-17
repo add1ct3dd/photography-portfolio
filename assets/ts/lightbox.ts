@@ -147,7 +147,7 @@ class DialogLightbox {
     const link = this.images[this.currentImageIndex];
     const thumbImg = link.querySelector("img") as HTMLImageElement;
     const imgName = thumbImg?.dataset.name || "";
-    
+
     // Extract base name without extension
     const baseName = imgName.replace(/\.[^.]+$/, '');
 
@@ -161,7 +161,7 @@ class DialogLightbox {
     if (imageElement && exifContainer) {
       // Check if we should show the loading message (not on tiniest viewport where it's hidden anyway)
       const shouldShowLoadingMessage = window.innerWidth > 737;
-      
+
       // Always clear previous metadata
       if (shouldShowLoadingMessage) {
         exifContainer.innerHTML = '<p>Loading metadata...</p>';
@@ -169,10 +169,10 @@ class DialogLightbox {
         // On tiny viewports, just clear but don't show loading message
         exifContainer.innerHTML = '';
       }
-      
+
       // Reset image opacity before loading new one
       imageElement.style.opacity = "0";
-      
+
       // Use responsive image with high-quality variants for lightbox
       imageElement.srcset = `
         /images/fulls/avif/${baseName}-600w.avif 600w,
@@ -195,25 +195,25 @@ class DialogLightbox {
       imageElement.alt = thumbImg?.alt || "Full size image";
       // Enable lazy decoding for better performance
       imageElement.decoding = "async";
-      
+
       // Handle image load for sizing and fade-in
       imageElement.onload = () => {
         // Adjust dialog size to fit the image
         this.adjustDialogSize(imageElement);
-        
+
         // Fade in the image smoothly
         requestAnimationFrame(() => {
           imageElement.style.opacity = "1";
         });
       };
-      
+
       imageElement.onerror = () => {
         // Fallback if image fails to load
         requestAnimationFrame(() => {
           imageElement.style.opacity = "1";
         });
       };
-      
+
       // Load EXIF data for this image always, so it's ready if viewport expands
       // Use a small delay to ensure image is loaded
       setTimeout(() => {
@@ -221,7 +221,7 @@ class DialogLightbox {
         const currentLink = this.images[this.currentImageIndex];
         const currentThumbImg = currentLink.querySelector("img") as HTMLImageElement;
         const currentImgName = currentThumbImg?.dataset.name || "";
-        
+
         if (currentImgName === imgName) {
           this.loadExifFromImage(imageElement, imgName, exifContainer);
         }
@@ -256,7 +256,7 @@ class DialogLightbox {
       if (img && img.src) {
         // Create a fresh image element to avoid EXIF.js caching issues
         const tempImg = new Image();
-        
+
         tempImg.onload = () => {
           (window as any).EXIF.getData(tempImg, () => {
             const markup = this.getExifDataMarkup(tempImg, imgName);
@@ -264,11 +264,11 @@ class DialogLightbox {
             container.innerHTML = markup;
           });
         };
-        
+
         tempImg.onerror = () => {
           container.innerHTML = "<p>View on Flickr</p>";
         };
-        
+
         // Set the src to trigger load
         tempImg.src = img.src;
       } else {
@@ -282,7 +282,7 @@ class DialogLightbox {
   private getExifDataMarkup(img: HTMLImageElement, imgName: string): string {
     const EXIF = (window as any).EXIF;
     const icons = (window as any).icons || {};
-    
+
     let template = "";
 
     // Add EXIF tags
@@ -354,12 +354,12 @@ class DialogLightbox {
   private prefetchAdjacentImages(): void {
     // Prefetch next 2 images and previous 1 image for optimal UX
     const indicesToPrefetch: number[] = [];
-    
+
     // Previous image
     if (this.currentImageIndex > 0) {
       indicesToPrefetch.push(this.currentImageIndex - 1);
     }
-    
+
     // Next 2 images
     if (this.currentImageIndex < this.images.length - 1) {
       indicesToPrefetch.push(this.currentImageIndex + 1);

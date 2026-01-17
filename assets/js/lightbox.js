@@ -105,7 +105,13 @@ class DialogLightbox {
         const imageElement = this.dialog?.querySelector(".lightbox-image");
         const exifContainer = this.dialog?.querySelector(".lightbox-exif");
         if (imageElement && exifContainer) {
-            exifContainer.innerHTML = '<p>Loading metadata...</p>';
+            const shouldShowLoadingMessage = window.innerWidth > 737;
+            if (shouldShowLoadingMessage) {
+                exifContainer.innerHTML = '<p>Loading metadata...</p>';
+            }
+            else {
+                exifContainer.innerHTML = '';
+            }
             imageElement.style.opacity = "0";
             imageElement.srcset = `
         /images/fulls/avif/${baseName}-600w.avif 600w,
@@ -265,8 +271,10 @@ class DialogLightbox {
         const naturalWidth = img.naturalWidth;
         const naturalHeight = img.naturalHeight;
         const imageRatio = naturalWidth / naturalHeight;
+        const isTinyViewport = window.innerWidth <= 737;
+        const metadataHeight = isTinyViewport ? 40 : 80;
         const maxWidth = window.innerWidth * 0.9;
-        const maxHeight = window.innerHeight * 0.9;
+        const maxHeight = window.innerHeight * 0.9 - metadataHeight;
         const maxRatio = maxWidth / maxHeight;
         let newWidth;
         let newHeight;
@@ -279,7 +287,7 @@ class DialogLightbox {
             newWidth = newHeight * imageRatio;
         }
         this.dialog.style.width = newWidth + "px";
-        this.dialog.style.height = (newHeight + 80) + "px";
+        this.dialog.style.height = (newHeight + metadataHeight) + "px";
         this.dialog.style.maxWidth = "95vw";
         this.dialog.style.maxHeight = "95vh";
     }

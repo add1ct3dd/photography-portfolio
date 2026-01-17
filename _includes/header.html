@@ -73,21 +73,31 @@
 <!-- Dark mode and motion preferences support -->
 <style>
   @media (prefers-color-scheme: dark) {
-    :root { --bg-dark: #1a1a1a; --text-dark: #f0f0f0; }
+    :root {
+      --bg-dark: #1a1a1a;
+      --text-dark: #f0f0f0;
+    }
   }
+
   @media (prefers-reduced-motion: reduce) {
-    * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 </style>
 
 <!-- Google Fonts - only load weights we use (400, 700) -->
-<link rel="preload" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=swap" as="style">
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=swap"
+  as="style">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=swap">
 
 <!-- Fallback for no-JS -->
 <noscript>
   <link rel="stylesheet" href="assets/css/main.min.css?v={{ site.data.asset-hashes['assets/css/main.min.css'] }}" />
-  <link rel="stylesheet" href="assets/css/noscript.min.css?v={{ site.data.asset-hashes['assets/css/noscript.min.css'] }}" />
+  <link rel="stylesheet"
+    href="assets/css/noscript.min.css?v={{ site.data.asset-hashes['assets/css/noscript.min.css'] }}" />
   <link rel="stylesheet" href="assets/css/custom.min.css?v={{ site.data.asset-hashes['assets/css/custom.min.css'] }}" />
   <link rel="stylesheet" href="/assets/css/icons.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=swap">
@@ -102,9 +112,9 @@
   function gtag() { dataLayer.push(arguments); }
   gtag('js', new Date());
   gtag('config', '{{ site.google_analytics }}');
-  
+
   // Defer loading GA script until after page interaction
-  window.addEventListener('load', function() {
+  window.addEventListener('load', function () {
     var script = document.createElement('script');
     script.src = 'https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}';
     script.async = true;

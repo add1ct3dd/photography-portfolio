@@ -6,25 +6,19 @@ import babel from 'gulp-babel';
 import uglify from 'gulp-uglify';
 import rename from 'gulp-rename';
 import filter from 'gulp-filter';
-import cleanCSS from 'clean-css';
+import gzip from 'gulp-gzip';
 import { spawn } from 'child_process';
 import path from 'path';
 import del from 'del';
 import fs from 'fs';
 import { promises as fsPromises } from 'fs';
 import crypto from 'crypto';
-import gzip from 'gulp-gzip';
 
 const sass = gulpSass(dartSass);
 
-gulp.task('delete', function () {
-    return;
-    // return del(['images/fulls/*', 'images/thumbs/*']);
-});
-
 gulp.task('resize-images', async function () {
     const sourceDir = 'images/source';
-    
+
     // Define responsive breakpoints for photography portfolio
     // Thumbnails: mobile, tablet, desktop
     // Full images: mobile, tablet, desktop, ultra-high-res
@@ -58,7 +52,7 @@ gulp.task('resize-images', async function () {
     for (const file of imageFiles) {
         const inputPath = path.join(sourceDir, file);
         const baseName = path.parse(file).name;
-        
+
         // Check if this image has already been processed (incremental check)
         const existingFile = path.join('images/fulls', `${baseName}-3440w.jpg`);
         if (fs.existsSync(existingFile)) {
@@ -101,7 +95,7 @@ gulp.task('resize-images', async function () {
             console.error(`   ✗ Error processing ${file}:`, err.message, `\n`);
         }
     }
-    
+
     if (processedImages === 0) {
         console.log(`✅ All images already processed! No new variants generated.\n`);
     } else {
@@ -112,7 +106,7 @@ gulp.task('resize-images', async function () {
 // Full regeneration task - deletes all generated images and regenerates from source
 gulp.task('resize-images-full', async function () {
     const sourceDir = 'images/source';
-    
+
     // Define responsive breakpoints for photography portfolio
     const sizes = [
         { name: 'thumbs', widths: [200, 400, 840], quality: { jpeg: 90, webp: 88, avif: 85 } },
@@ -200,14 +194,12 @@ gulp.task('sass', function () {
 // minify standalone css files (custom-properties now merged into main.scss)
 gulp.task('minify-css', async function () {
     const cssFiles = [];
-    
+    const CleanCSS = (await import('clean-css')).default;
+
     for (const file of cssFiles) {
         try {
             const input = await fsPromises.readFile(file, 'utf-8');
-            const output = new (await import('clean-css')).default().minify(input);
-            const outputFile = file.replace('.css', '.min.css');
-            await fsPromises.writeFile(outputFile, output.styles);
-            console.log(`Minified: ${outputFile}`);
+            const output = new CleanCSS().minify(input);
         } catch (err) {
             console.error(`Error minifying ${file}:`, err.message);
         }
@@ -246,7 +238,7 @@ gulp.task('compile-ts', function (done) {
     try {
         const command = process.platform === 'win32' ? 'npx.cmd' : 'npx';
         const tsc = spawn(command, ['tsc'], { stdio: 'inherit', shell: true });
-        
+
         tsc.on('close', (code) => {
             if (code === 0) {
                 console.log('[TypeScript] Compiled successfully');
@@ -278,7 +270,7 @@ gulp.task('generate-hashes', async function () {
         'assets/js/main.min.js',
         'assets/js/lightbox.min.js'
     ];
-    
+
     const cssFiles = [
         'assets/css/custom.min.css',
         'assets/css/main.min.css',

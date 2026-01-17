@@ -246,6 +246,7 @@
 }
 
 @media (max-width: 800px) {
+
   // Hide all but first EXIF span
   .lightbox-exif span:not(:first-of-type) {
     display: none;
