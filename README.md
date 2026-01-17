@@ -1,12 +1,25 @@
 <img src="https://i.imgur.com/ZG4gSnb.jpeg" alt="demo"/>
 
-# Photography ![OpenCollective](https://opencollective.com/photography/tiers/backer/badge.svg?label=backer&color=brightgreen)
-A jekyll website for photographers
+# Photography Portfolio
+A modern Jekyll website for photographers
+
+## v1.0 - Modern Rewrite
+This is a complete modernization of the photography portfolio template with significant performance improvements and modern web technologies:
+
+### Major Updates
+- **Removed jQuery** - 77.7% JavaScript reduction (142.4 KB → 31.68 KB)
+- **Replaced Poptrox with TypeScript** - Native HTML5 `<dialog>` API for modern lightbox experience
+- **Optimized CSS** - 86% reduction (33.7 KB → 4.9 KB) by removing unused template components
+- **GPU-Accelerated Animations** - Smooth transitions and fade effects with `will-change` and `transform: translate3d`
+- **Dynamic Lightbox Sizing** - Responsive dialog that scales to image aspect ratio
+- **Improved UX** - Click outside to close panels, keyboard navigation (ESC, Arrow keys)
+- **TypeScript Support** - Full TypeScript compilation with ES2020 target
 
 ## Highlights
 1. Easy setup and you get a website of your own for __free__. No web hosting charges too.
 2. To add new pictures, you need to just upload them. __No code__ changes required.
-3. And, my favorite, you get to see EXIF data like __aperture, shutter speed, iso__ etc. when you click on any image, automagically. Moreover, you can customize this as per your needs.
+3. See EXIF data like __aperture, shutter speed, iso__ etc. when you click on any image. Customizable metadata display.
+4. Fast and modern - no jQuery dependency, optimized CSS and JavaScript bundle
 
 ## Quick Start
 If you know a tad about tech and love taking pictures then this open-source project may help you setup a website to showcase
@@ -18,65 +31,38 @@ it's hosted by GitHub for __free__.
 1. Fork this repo by hitting the `Fork` button at the top right corner.
 2. Enable github pages from the repo settings.
 3. Upload your pictures to `images/fulls` and `images/thumbs` directory. _You can do that on github.com itself or you can clone and push the images to your repo._
-4. Add your own custom domain in `CNAME` file or just remove the file if you don't own a domain and use the default domain that github provides ([yourusername].github.io/photography).
+4. Add your own custom domain in `CNAME` file or just remove the file if you don't own a domain and use the default domain that github provides ([yourusername].github.io/photography-portfolio).
 5. Update `baseurl` field in `_config.yml` file with whatever domain you used in step 4.
-6. And that's it, your website is set. To view, go to [photography.rampatra.com](http://photography.rampatra.com) (or whatever you have in the CNAME file) and if you don't have one, you can go to [[yourusername].github.io/photography](http://yourusername.github.io/photography)
-
-And, of course, you don't want my name at the bottom to show up. You can change it in `_config.yml` file as well as a few other settings like your social links, google analytics, etc. Just do not forget to [build the website](#build-the-website) after you make the changes.
+6. Update site metadata in `_config.yml` (title, author, social links, etc.)
+7. And that's it, your website is set. Push your changes and visit your live site!
 
 ## Run the website locally to test
-1. `$ cd photography` - go to the project directory
-2. `$ bundle install` - install gems
-3. Change the `baseurl` in `_config.yml`
-4. `$ bundle exec jekyll serve` - start/run the website
+```bash
+$ npm install          # install all dependencies
+$ npm run dev          # starts webpack watch + Jekyll serve
+```
 
-### Build the website
-1. `$ cd photography` - go to the project directory
-2. `$ npm install` - install all npm dependencies
-3. `$ gulp` - minify css, js, resize images, etc.
+Then open [http://localhost:4000](http://localhost:4000) in your browser.
+## Available Scripts
 
-Note: You only need to build the website if you make changes such as replacing the images, modifying the css styles, etc.
- 
-## ProTips
+```bash
+npm run build       # Build CSS + Jekyll site
+npm run build:css   # Build CSS only (Gulp: TypeScript, SASS, minify)
+npm run dev         # Start development server with watch mode
+npm run watch       # Watch SASS changes
+npm run serve       # Start Jekyll development server
+npm run resize      # Resize images and generate thumbnails
+```
 
-### Resize Images
-I have made this as a [npm](https://www.npmjs.com) package with [gulp](http://gulpjs.com/) to __automate image resizing
-and thumbnail generation__. So if you're lazy like me then you can just do the following before you push your images to github.
+## Credits & Attribution
 
-1. Fork and clone the project to your computer
-2. Go inside the project `$ cd photography`
-3. Install all dependencies by `$ npm install`
-4. Copy all your pictures (possibly jpg, the largest size available, straight from your camera) and put it inside `images` directory
-5. Run `$ gulp resize` to resize the images and to generate thumbnails automatically
-6. Push your changes to github.com by `$ git add --all` and `$ git commit -m "a nice commit message"` and then finally `$ git push origin master`
+This project was originally based on [rampatra/photography](https://github.com/rampatra/photography) - a photography portfolio template built with Jekyll. 
 
-### Contact Form
-You can make the contact form work without the need of any server-side code. Just follow this [article on github](https://github.com/dwyl/html-form-send-email-via-google-script-without-server) which uses a simple google script to send emails or to upload to a google spreadsheet when someone submits the form.
+The v1.0 rewrite modernizes and completely restructures the codebase with:
+- Modern JavaScript/TypeScript instead of jQuery
+- Updated build pipeline with Gulp 4
+- Significantly reduced CSS and JavaScript bundles
+- GPU-accelerated animations
+- Improved accessibility and user experience
 
-## Credits
-Thanks to [AJ](https://twitter.com/ajlkn) for the website template which I enhanced for [jekyll](http://jekyllrb.com/).
-
-## Sponsors
-
-Proudly sponsored by these awesome apps. Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://x.com/rampatra_)]
-
-<table>
-    <tr>
-        <td>
-            <a href="https://presentifyapp.com/" target="_blank"><img src="https://presentifyapp.com/assets/img/presentify/app-icon-512.png" width="150" height="150"></a>
-        </td>
-        <td>
-            <a href="https://facescreenapp.com/" target="_blank"><img src="https://github.com/user-attachments/assets/b251b413-ccc4-48f1-a316-c2c2a71f959e" width="150" height="150"></a>
-        </td>
-        <td>
-            <a href="https://todobarapp.com/" target="_blank"><img src="https://todobarapp.com/assets/img/todobar/app-icon-512.png" width="150" height="150"></a>
-        </td>
-        <td>
-            <a href="https://simplefillapp.com/" target="_blank"><img src="https://github.com/user-attachments/assets/6c575d9c-b65b-4ce7-a468-30f74cfedf18" width="150" height="150"></a>
-        </td>
-    </tr>
-</table>
-
----
-
-_P.S. For any queries or concerns, you can reach out to me on [Twitter](https://twitter.com/ram__patra). I'll try my best to help 🙏._
+Special thanks to [rampatra](https://github.com/rampatra) for the original template foundation.
