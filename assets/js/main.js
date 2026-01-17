@@ -257,15 +257,27 @@
 			var current_data = exif[current];
 			var exif_data = EXIF.getTag(img, current_data['tag']);
 			if (typeof exif_data !== "undefined") {
-				template += '<span title="' + current_data['tag'].split(/(?=[A-Z])/).join(" ") + ": " + exif_data + '"><i class="fa fa-' + current_data['icon'] + '" aria-hidden="true"></i> ' + exif_data + '</span>&nbsp;&nbsp;';
+				var iconSvg = getIconSvg(current_data['icon']);
+				template += '<span title="' + current_data['tag'].split(/(?=[A-Z])/).join(" ") + ": " + exif_data + '">' + iconSvg + ' ' + exif_data + '</span>&nbsp;&nbsp;';
 				if (current_data['tag'] === "LensModel") { template += "</br>"; }
 			}
 		}
 
 		var flickrImgUrl = img['src'].split('_')[0].split('/images/thumbs/')[1];
-		template += '<a target="_blank" style="float:right;" href="https://flickr.com/photos/matthew-evans/' + flickrImgUrl + '/"><i class="fab fa-flickr"></i> View on Flickr</a>';
+		template += '<a target="_blank" style="float:right;" href="https://flickr.com/photos/matthew-evans/' + flickrImgUrl + '/">' + getIconSvg('flickr') + ' View on Flickr</a>';
 
 		return template;
+	}
+
+	// Icon SVG data
+	function getIconSvg(iconName) {
+		// Use global icons object from icons.js and add icon-inline class
+		var svgString = window.icons[iconName] || '';
+		if (svgString) {
+			// Add icon-inline class if not already present
+			svgString = svgString.replace('<svg', '<svg class="icon-inline"');
+		}
+		return svgString;
 	}
 
 })(jQuery);
