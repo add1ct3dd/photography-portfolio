@@ -204,6 +204,8 @@ class DialogLightbox {
       }, { passive: false });
 
       imageContainer.addEventListener("gestureend", () => {
+        // Preserve zoom level for next gesture
+        this.lastScale = this.currentScale;
         if (this.currentScale <= 1) {
           this.resetZoom(image);
         }
@@ -221,16 +223,18 @@ class DialogLightbox {
           if (this.currentScale > 1) {
             this.resetZoom(image);
           } else {
-            // Zoom to 3x centered on tap position
+            // Zoom to 1:1 (maxZoom) centered on tap position
             const rect = imageContainer.getBoundingClientRect();
             const tapX = e.changedTouches[0].clientX - rect.left;
             const tapY = e.changedTouches[0].clientY - rect.top;
             const centerX = rect.width / 2;
             const centerY = rect.height / 2;
 
-            this.currentScale = 3;
-            this.translateX = (centerX - tapX) * 2;
-            this.translateY = (centerY - tapY) * 2;
+            this.currentScale = this.maxZoom;
+            this.lastScale = this.maxZoom;
+            // Translate to center on tap position
+            this.translateX = (centerX - tapX) * (this.maxZoom - 1);
+            this.translateY = (centerY - tapY) * (this.maxZoom - 1);
             this.applyTransform(image);
           }
         }
