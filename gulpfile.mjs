@@ -56,6 +56,97 @@ gulp.task('resize-images', async function () {
     for (const file of imageFiles) {
         const inputPath = path.join(sourceDir, file);
         const baseName = path.parse(file).name;
+        
+        // Check if this image has already been processed (incremental check)
+        const existingFile = path.join('images/fulls', `${baseName}-3440w.jpg`);
+        if (fs.existsSync(existingFile)) {
+            // Image already processed, skip
+            console.log(`[${imageFiles.indexOf(file) + 1}/${totalImages}] Skipping: ${baseName} (already generated)`);
+            continue;
+        }
+
+        processedImages++;
+        const progress = ((processedImages / imageFiles.filter(f => !fs.existsSync(path.join('images/fulls', `${path.parse(f).name}-3440w.jpg`))).length) * 100).toFixed(1);
+        console.log(`[${processedImages} new - ${progress}%] Processing: ${baseName}`);
+
+        try {
+            for (const sizeConfig of sizes) {
+                for (const width of sizeConfig.widths) {
+                    // JPEG - baseline format
+                    await sharp(inputPath)
+                        .resize(width, null, { withoutEnlargement: true })
+                        .withMetadata()
+                        .jpeg({ quality: sizeConfig.quality.jpeg, progressive: true })
+                        .toFile(path.join(`images/${sizeConfig.name}`, `${baseName}-${width}w.jpg`));
+
+                    // WebP - modern format (25-35% smaller than JPEG)
+                    await sharp(inputPath)
+                        .resize(width, null, { withoutEnlargement: true })
+                        .withMetadata()
+                        .webp({ quality: sizeConfig.quality.webp })
+                        .toFile(path.join(`images/${sizeConfig.name}/webp`, `${baseName}-${width}w.webp`));
+
+                    // AVIF - next-gen format (30-40% smaller than JPEG)
+                    await sharp(inputPath)
+                        .resize(width, null, { withoutEnlargement: true })
+                        .withMetadata()
+                        .avif({ quality: sizeConfig.quality.avif })
+                        .toFile(path.join(`images/${sizeConfig.name}/avif`, `${baseName}-${width}w.avif`));
+                }
+            }
+            console.log(`   ✓ Generated variants (7 sizes × 3 formats)\n`);
+        } catch (err) {
+            console.error(`   ✗ Error processing ${file}:`, err.message, `\n`);
+        }
+    }
+    
+    if (processedImages === 0) {
+        console.log(`✅ All images already processed! No new variants generated.\n`);
+    } else {
+        console.log(`✅ Image generation complete! Generated ${processedImages * totalSizeVariants} new variants from ${processedImages} new images.\n`);
+    }
+});
+
+// Full regeneration task - deletes all generated images and regenerates from source
+gulp.task('resize-images-full', async function () {
+    const sourceDir = 'images/source';
+    
+    // Define responsive breakpoints for photography portfolio
+    const sizes = [
+        { name: 'thumbs', widths: [200, 400, 840], quality: { jpeg: 90, webp: 88, avif: 85 } },
+        { name: 'fulls', widths: [600, 1200, 2400, 3440], quality: { jpeg: 95, webp: 94, avif: 92 } }
+    ];
+
+    // Delete all generated images
+    console.log(`\n🗑️  Clearing existing generated images...\n`);
+    for (const size of sizes) {
+        await del([`images/${size.name}/**`, `!images/${size.name}`]);
+    }
+
+    // Ensure output directories exist
+    for (const size of sizes) {
+        await fsPromises.mkdir(`images/${size.name}`, { recursive: true });
+        await fsPromises.mkdir(`images/${size.name}/webp`, { recursive: true });
+        await fsPromises.mkdir(`images/${size.name}/avif`, { recursive: true });
+    }
+
+    // Get all image files from source directory
+    const files = await fsPromises.readdir(sourceDir);
+    const imageFiles = files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f));
+
+    const totalImages = imageFiles.length;
+    const totalFormats = 3; // JPEG, WebP, AVIF
+    const totalSizeVariants = sizes.reduce((sum, s) => sum + s.widths.length, 0); // 7 total (3+4)
+    const totalVariants = totalImages * totalFormats * totalSizeVariants;
+
+    console.log(`\n📸 Regenerating all images for responsive delivery...`);
+    console.log(`   Total variants to generate: ${totalVariants} (${totalImages} images × ${totalFormats} formats × ${totalSizeVariants} sizes)\n`);
+
+    let processedImages = 0;
+
+    for (const file of imageFiles) {
+        const inputPath = path.join(sourceDir, file);
+        const baseName = path.parse(file).name;
         processedImages++;
 
         const progress = ((processedImages / totalImages) * 100).toFixed(1);
@@ -86,12 +177,12 @@ gulp.task('resize-images', async function () {
                         .toFile(path.join(`images/${sizeConfig.name}/avif`, `${baseName}-${width}w.avif`));
                 }
             }
-            console.log(`   ✓ Generated variants (3 sizes × 3 formats)\n`);
+            console.log(`   ✓ Generated variants (7 sizes × 3 formats)\n`);
         } catch (err) {
             console.error(`   ✗ Error processing ${file}:`, err.message, `\n`);
         }
     }
-    console.log(`✅ Image generation complete! Generated ${totalVariants} variants from ${totalImages} sources.\n`);
+    console.log(`✅ Full regeneration complete! Generated ${totalVariants} variants from ${totalImages} sources.\n`);
 });
 
 // compile scss to css
@@ -178,8 +269,11 @@ gulp.task('compile-ts', function (done) {
 // build task
 gulp.task('build', gulp.series('compile-ts', 'sass', 'minify-css', 'minify-js'));
 
-// resize images
+// resize images (incremental - only new images)
 gulp.task('resize', gulp.series('resize-images'));
+
+// resize images (full - regenerate all)
+gulp.task('resize:full', gulp.series('resize-images-full'));
 
 // default task
 gulp.task('default', gulp.series('build', 'resize'));
