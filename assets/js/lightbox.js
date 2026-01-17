@@ -79,9 +79,10 @@ class DialogLightbox {
         const image = this.dialog?.querySelector(".lightbox-image");
         if (!imageContainer || !image)
             return;
-        imageContainer.addEventListener("touchstart", (e) => {
+        const handleTouchStart = (e) => {
             if (e.touches.length === 2) {
                 e.preventDefault();
+                e.stopPropagation();
                 this.isPinching = true;
                 this.initialDistance = this.getTouchDistance(e.touches);
                 this.lastScale = this.currentScale;
@@ -93,13 +94,14 @@ class DialogLightbox {
                 this.lastTranslateX = this.translateX;
                 this.lastTranslateY = this.translateY;
             }
-        }, { passive: false });
-        imageContainer.addEventListener("touchmove", (e) => {
+        };
+        const handleTouchMove = (e) => {
             if (e.touches.length === 2 && this.isPinching) {
                 e.preventDefault();
+                e.stopPropagation();
                 const currentDistance = this.getTouchDistance(e.touches);
                 const scale = (currentDistance / this.initialDistance) * this.lastScale;
-                this.currentScale = Math.min(Math.max(scale, 1), 4);
+                this.currentScale = Math.min(Math.max(scale, 1), 8);
                 this.applyTransform(image);
             }
             else if (e.touches.length === 1 && this.currentScale > 1) {
@@ -110,17 +112,41 @@ class DialogLightbox {
                 this.translateY = this.lastTranslateY + deltaY;
                 this.applyTransform(image);
             }
-        }, { passive: false });
-        imageContainer.addEventListener("touchend", (e) => {
-            if (e.touches.length < 2) {
+        };
+        const handleTouchEnd = (_e) => {
+            if (_e.touches.length < 2) {
                 this.isPinching = false;
             }
             if (this.currentScale <= 1) {
                 this.resetZoom(image);
             }
-        });
+        };
+        imageContainer.addEventListener("touchstart", handleTouchStart, { passive: false });
+        imageContainer.addEventListener("touchmove", handleTouchMove, { passive: false });
+        imageContainer.addEventListener("touchend", handleTouchEnd, { passive: false });
+        image.addEventListener("touchstart", handleTouchStart, { passive: false });
+        image.addEventListener("touchmove", handleTouchMove, { passive: false });
+        image.addEventListener("touchend", handleTouchEnd, { passive: false });
+        if ('GestureEvent' in window) {
+            imageContainer.addEventListener("gesturestart", (e) => {
+                e.preventDefault();
+                this.lastScale = this.currentScale;
+            }, { passive: false });
+            imageContainer.addEventListener("gesturechange", (e) => {
+                e.preventDefault();
+                const gestureEvent = e;
+                const newScale = this.lastScale * gestureEvent.scale;
+                this.currentScale = Math.min(Math.max(newScale, 1), 8);
+                this.applyTransform(image);
+            }, { passive: false });
+            imageContainer.addEventListener("gestureend", () => {
+                if (this.currentScale <= 1) {
+                    this.resetZoom(image);
+                }
+            }, { passive: false });
+        }
         let lastTap = 0;
-        imageContainer.addEventListener("touchend", (e) => {
+        const handleDoubleTap = (e) => {
             if (e.touches.length === 0 && e.changedTouches.length === 1) {
                 const now = Date.now();
                 if (now - lastTap < 300) {
@@ -134,15 +160,17 @@ class DialogLightbox {
                         const tapY = e.changedTouches[0].clientY - rect.top;
                         const centerX = rect.width / 2;
                         const centerY = rect.height / 2;
-                        this.currentScale = 2;
-                        this.translateX = (centerX - tapX);
-                        this.translateY = (centerY - tapY);
+                        this.currentScale = 3;
+                        this.translateX = (centerX - tapX) * 2;
+                        this.translateY = (centerY - tapY) * 2;
                         this.applyTransform(image);
                     }
                 }
                 lastTap = now;
             }
-        });
+        };
+        imageContainer.addEventListener("touchend", handleDoubleTap, { passive: false });
+        image.addEventListener("touchend", handleDoubleTap, { passive: false });
     }
     getTouchDistance(touches) {
         const dx = touches[0].clientX - touches[1].clientX;
@@ -155,7 +183,7 @@ class DialogLightbox {
     }
     updateImageSizesForZoom(image) {
         const baseSize = window.innerWidth <= 768 ? 95 : 90;
-        const effectiveSize = Math.min(baseSize * this.currentScale, 100 * 4);
+        const effectiveSize = Math.min(baseSize * this.currentScale, 100 * 8);
         image.sizes = `${effectiveSize}vw`;
     }
     resetZoom(image) {

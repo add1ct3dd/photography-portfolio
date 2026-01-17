@@ -21,7 +21,7 @@ class DialogLightbox {
   private exifDatas: ExifData = {};
   private exifConfig: ExifConfig = {};
   private isTransitioning: boolean = false;
-  
+
   // Pinch-to-zoom state
   private currentScale: number = 1;
   private initialDistance: number = 0;
@@ -129,10 +129,11 @@ class DialogLightbox {
 
     if (!imageContainer || !image) return;
 
-    // Prevent default touch behavior on the image container
-    imageContainer.addEventListener("touchstart", (e) => {
+    // Handle touch events on both container and image for better browser compatibility
+    const handleTouchStart = (e: TouchEvent) => {
       if (e.touches.length === 2) {
         e.preventDefault();
+        e.stopPropagation();
         this.isPinching = true;
         this.initialDistance = this.getTouchDistance(e.touches);
         this.lastScale = this.currentScale;
@@ -144,14 +145,15 @@ class DialogLightbox {
         this.lastTranslateX = this.translateX;
         this.lastTranslateY = this.translateY;
       }
-    }, { passive: false });
+    };
 
-    imageContainer.addEventListener("touchmove", (e) => {
+    const handleTouchMove = (e: TouchEvent) => {
       if (e.touches.length === 2 && this.isPinching) {
         e.preventDefault();
+        e.stopPropagation();
         const currentDistance = this.getTouchDistance(e.touches);
         const scale = (currentDistance / this.initialDistance) * this.lastScale;
-        this.currentScale = Math.min(Math.max(scale, 1), 4); // Limit zoom 1x-4x
+        this.currentScale = Math.min(Math.max(scale, 1), 8); // Limit zoom 1x-8x
         this.applyTransform(image);
       } else if (e.touches.length === 1 && this.currentScale > 1) {
         // Pan when zoomed in
@@ -162,21 +164,52 @@ class DialogLightbox {
         this.translateY = this.lastTranslateY + deltaY;
         this.applyTransform(image);
       }
-    }, { passive: false });
+    };
 
-    imageContainer.addEventListener("touchend", (e) => {
-      if (e.touches.length < 2) {
+    const handleTouchEnd = (_e: TouchEvent) => {
+      if (_e.touches.length < 2) {
         this.isPinching = false;
       }
       // Reset if zoomed out completely
       if (this.currentScale <= 1) {
         this.resetZoom(image);
       }
-    });
+    };
+
+    // Attach to both container and image for cross-browser support
+    imageContainer.addEventListener("touchstart", handleTouchStart, { passive: false });
+    imageContainer.addEventListener("touchmove", handleTouchMove, { passive: false });
+    imageContainer.addEventListener("touchend", handleTouchEnd, { passive: false });
+
+    image.addEventListener("touchstart", handleTouchStart, { passive: false });
+    image.addEventListener("touchmove", handleTouchMove, { passive: false });
+    image.addEventListener("touchend", handleTouchEnd, { passive: false });
+
+    // Also handle gesturestart/gesturechange for Safari/WebKit browsers
+    if ('GestureEvent' in window) {
+      imageContainer.addEventListener("gesturestart", (e) => {
+        e.preventDefault();
+        this.lastScale = this.currentScale;
+      }, { passive: false });
+
+      imageContainer.addEventListener("gesturechange", (e: Event) => {
+        e.preventDefault();
+        const gestureEvent = e as unknown as { scale: number };
+        const newScale = this.lastScale * gestureEvent.scale;
+        this.currentScale = Math.min(Math.max(newScale, 1), 8);
+        this.applyTransform(image);
+      }, { passive: false });
+
+      imageContainer.addEventListener("gestureend", () => {
+        if (this.currentScale <= 1) {
+          this.resetZoom(image);
+        }
+      }, { passive: false });
+    }
 
     // Double-tap to zoom
     let lastTap = 0;
-    imageContainer.addEventListener("touchend", (e) => {
+    const handleDoubleTap = (e: TouchEvent) => {
       if (e.touches.length === 0 && e.changedTouches.length === 1) {
         const now = Date.now();
         if (now - lastTap < 300) {
@@ -185,22 +218,25 @@ class DialogLightbox {
           if (this.currentScale > 1) {
             this.resetZoom(image);
           } else {
-            // Zoom to 2x centered on tap position
+            // Zoom to 3x centered on tap position
             const rect = imageContainer.getBoundingClientRect();
             const tapX = e.changedTouches[0].clientX - rect.left;
             const tapY = e.changedTouches[0].clientY - rect.top;
             const centerX = rect.width / 2;
             const centerY = rect.height / 2;
-            
-            this.currentScale = 2;
-            this.translateX = (centerX - tapX);
-            this.translateY = (centerY - tapY);
+
+            this.currentScale = 3;
+            this.translateX = (centerX - tapX) * 2;
+            this.translateY = (centerY - tapY) * 2;
             this.applyTransform(image);
           }
         }
         lastTap = now;
       }
-    });
+    };
+
+    imageContainer.addEventListener("touchend", handleDoubleTap, { passive: false });
+    image.addEventListener("touchend", handleDoubleTap, { passive: false });
   }
 
   private getTouchDistance(touches: TouchList): number {
@@ -211,7 +247,7 @@ class DialogLightbox {
 
   private applyTransform(image: HTMLImageElement): void {
     image.style.transform = `translate3d(${this.translateX}px, ${this.translateY}px, 0) scale(${this.currentScale})`;
-    
+
     // Update sizes attribute to trigger higher resolution image loading when zoomed
     // This tells the browser the image is being displayed larger than actual viewport
     this.updateImageSizesForZoom(image);
@@ -221,7 +257,7 @@ class DialogLightbox {
     // Calculate effective display size based on zoom level
     // When zoomed to 2x, we need 2x the pixels for sharp display
     const baseSize = window.innerWidth <= 768 ? 95 : 90;
-    const effectiveSize = Math.min(baseSize * this.currentScale, 100 * 4); // Cap at 4x viewport
+    const effectiveSize = Math.min(baseSize * this.currentScale, 100 * 8); // Cap at 8x viewport
     
     // Update sizes to tell browser to load higher resolution
     image.sizes = `${effectiveSize}vw`;
@@ -296,7 +332,7 @@ class DialogLightbox {
     if (imageElement && exifContainer) {
       // Reset zoom when changing images
       this.resetZoom(imageElement);
-      
+
       // Check if we should show the loading message (not on tiniest viewport where it's hidden anyway)
       const shouldShowLoadingMessage = window.innerWidth > 737;
 
