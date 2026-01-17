@@ -6,32 +6,32 @@ layout: default
 <div id="wrapper">
 
     <!-- Header -->
-    <header id="header">
+    <header id="header" role="banner">
         <h1><a href="/"><strong>{{ site.header.title }}</strong> {{ site.header.subtitle }}</a></h1>
-        <nav>
+        <nav aria-label="Main navigation">
             <ul>
-                <li><a href="#footer" class="icon" data-icon="info-circle">About</a></li>
+                <li><a href="#footer" class="icon" data-icon="info-circle" aria-label="About">About</a></li>
             </ul>
         </nav>
     </header>
 
-    <!-- Main -->
-    <div id="main" data-exif='{{ site.exif }}'>
+    <!-- Main Gallery -->
+    <main id="main" data-exif='{{ site.exif }}' role="main" aria-label="Photography Gallery">
         {% for image in site.static_files reversed %}
         {% if image.path contains 'fulls' %}
         <article class="thumb">
-            <a href="{{ site.baseurl }}{{ site.image_fulls_loc }}/{{ image.name }}" class="image">
-                <img src="{{ site.baseurl }}{{ site.image_thumbs_loc }}/{{ image.name }}" alt=""
-                    data-name="{{ image.name }}" /></a>
-            <!--<h2></h2>
-            <p></p>-->
+            <a href="{{ site.baseurl }}{{ site.image_fulls_loc }}/{{ image.name }}" class="image"
+                aria-label="View full size image {{ image.name }}">
+                <img src="{{ site.baseurl }}{{ site.image_thumbs_loc }}/{{ image.name }}" alt="Photo: {{ image.name }}"
+                    data-name="{{ image.name }}" />
+            </a>
         </article>
         {% endif %}
         {% endfor %}
-    </div>
+    </main>
 
     <!-- Footer -->
-    <footer id="footer" class="panel">
+    <footer id="footer" class="panel" role="contentinfo">
         <div class="inner split">
             <div>
                 <section>
@@ -47,70 +47,62 @@ layout: default
                 <section>
                     <h2>Get in touch</h2>
                     <p>For now, please contact me via Twitter or Instagram. </p>
-                    <!-- <form method="post" action="#">
-                        <div class="field half first">
-                            <input type="text" name="name" id="name" placeholder="Name"/>
-                        </div>
-                        <div class="field half">
-                            <input type="text" name="email" id="email" placeholder="Email"/>
-                        </div>
-                        <div class="field">
-                            <textarea name="message" id="message" rows="4" placeholder="Message"></textarea>
-                        </div>
-                        <ul class="actions">
-                            <li><input type="submit" value="Send" class="primary" /></li>
-                            <li><input type="reset" value="Reset" /></li>
-                        </ul>
-                    </form> -->
                 </section>
-                <section>
+                <section aria-label="Social media links">
                     <h2>Follow me on ...</h2>
-                    <ul class="icons">
+                    <ul class="icons" role="list">
                         {% if site.social_urls.facebook %}
-                        <li>
-                            <a href="{{ site.social_urls.facebook }}" target="_blank" class="icon brands" data-icon="facebook">
+                        <li role="listitem">
+                            <a href="{{ site.social_urls.facebook }}" target="_blank" rel="noopener noreferrer"
+                                class="icon brands" data-icon="facebook" aria-label="Visit Matthew Evans on Facebook">
                                 <span class="label">Facebook</span>
                             </a>
                         </li>
                         {% endif %}
                         {% if site.social_urls.twitter %}
-                        <li>
-                            <a href="{{ site.social_urls.twitter }}" target="_blank" class="icon brands" data-icon="twitter">
+                        <li role="listitem">
+                            <a href="{{ site.social_urls.twitter }}" target="_blank" rel="noopener noreferrer"
+                                class="icon brands" data-icon="twitter" aria-label="Visit Matthew Evans on Twitter">
                                 <span class="label">Twitter</span>
                             </a>
                         </li>
                         {% endif %}
                         {% if site.social_urls.instagram %}
-                        <li>
-                            <a href="{{ site.social_urls.instagram }}" target="_blank" class="icon brands" data-icon="instagram">
+                        <li role="listitem">
+                            <a href="{{ site.social_urls.instagram }}" target="_blank" rel="noopener noreferrer"
+                                class="icon brands" data-icon="instagram" aria-label="Visit Matthew Evans on Instagram">
                                 <span class="label">Instagram</span>
                             </a>
                         </li>
                         {% endif %}
                         {% if site.social_urls.dribbble %}
-                        <li>
-                            <a href="{{ site.social_urls.dribbble }}" target="_blank" class="icon brands" data-icon="dribbble">
+                        <li role="listitem">
+                            <a href="{{ site.social_urls.dribbble }}" target="_blank" rel="noopener noreferrer"
+                                class="icon brands" data-icon="dribbble" aria-label="Visit Matthew Evans on Dribbble">
                                 <span class="label">Dribbble</span>
                             </a>
                         </li>
                         {% endif %}
                         {% if site.social_urls.github %}
-                        <li>
-                            <a href="{{ site.social_urls.github }}" target="_blank" class="icon brands" data-icon="github">
+                        <li role="listitem">
+                            <a href="{{ site.social_urls.github }}" target="_blank" rel="noopener noreferrer"
+                                class="icon brands" data-icon="github" aria-label="Visit Matthew Evans on GitHub">
                                 <span class="label">GitHub</span>
                             </a>
                         </li>
                         {% endif %}
                         {% if site.social_urls.linkedin %}
-                        <li>
-                            <a href="{{ site.social_urls.linkedin }}" target="_blank" class="icon brands" data-icon="linkedin">
+                        <li role="listitem">
+                            <a href="{{ site.social_urls.linkedin }}" target="_blank" rel="noopener noreferrer"
+                                class="icon brands" data-icon="linkedin" aria-label="Visit Matthew Evans on LinkedIn">
                                 <span class="label">LinkedIn</span>
                             </a>
                         </li>
                         {% endif %}
                         {% if site.social_urls.flickr %}
-                        <li>
-                            <a href="{{ site.social_urls.flickr }}" target="_blank" class="icon brands" data-icon="flickr">
+                        <li role="listitem">
+                            <a href="{{ site.social_urls.flickr }}" target="_blank" rel="noopener noreferrer"
+                                class="icon brands" data-icon="flickr" aria-label="Visit Matthew Evans on Flickr">
                                 <span class="label">Flickr</span>
                             </a>
                         </li>
@@ -121,3 +113,36 @@ layout: default
         </div>
     </footer>
 </div>
+
+<!-- Structured Data: Photographer Profile -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "{{ site.author }}",
+  "description": "{{ site.footer.bio }}",
+  "url": "{{ site.baseurl }}",
+  "jobTitle": "Photographer",
+  "sameAs": [
+    {% if site.social_urls.twitter %}"{{ site.social_urls.twitter }}",{% endif %}
+    {% if site.social_urls.instagram %}"{{ site.social_urls.instagram }}",{% endif %}
+    {% if site.social_urls.github %}"{{ site.social_urls.github }}",{% endif %}
+    {% if site.social_urls.flickr %}"{{ site.social_urls.flickr }}"{% endif %}
+  ]
+}
+</script>
+
+<!-- Structured Data: Photography Collection -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ImageGallery",
+  "name": "{{ site.title }}",
+  "description": "{{ site.subtitle }}",
+  "creator": {
+    "@type": "Person",
+    "name": "{{ site.author }}"
+  },
+  "url": "{{ site.baseurl }}"
+}
+</script>

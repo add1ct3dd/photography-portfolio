@@ -49,6 +49,14 @@
 		});
 	}
 
+	// Keyboard navigation for accessibility
+	document.addEventListener('keydown', function(event) {
+		if (event.key === 'Escape' && $body.hasClass('content-active')) {
+			// Close any open panels when ESC is pressed
+			$panels.trigger('---hide');
+		}
+	});
+
 	// Scroll back to top.
 	$window.scrollTop(0);
 
@@ -208,11 +216,13 @@
 		baseZIndex: 20000,
 		caption: function ($a) {
 			var $image_img = $a.children('img');
-			var data = exifDatas[$image_img.data('name')];
+			var imgName = $image_img.data('name');
+			var data = exifDatas[imgName];
+			
 			if (data === undefined) {
-				// EXIF data					
-				EXIF.getData($image_img[0], function () {
-					data = exifDatas[$image_img.data('name')] = getExifDataMarkup(this);
+				var img = $image_img[0];
+				EXIF.getData(img, function () {
+					exifDatas[imgName] = getExifDataMarkup(this);
 				});
 			}
 			return data !== undefined ? '<p>' + data + '</p>' : ' ';
