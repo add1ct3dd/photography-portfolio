@@ -21,6 +21,18 @@ class DialogLightbox {
   private exifDatas: ExifData = {};
   private exifConfig: ExifConfig = {};
   private isTransitioning: boolean = false;
+  
+  // Pinch-to-zoom state
+  private currentScale: number = 1;
+  private initialDistance: number = 0;
+  private lastScale: number = 1;
+  private translateX: number = 0;
+  private translateY: number = 0;
+  private lastTranslateX: number = 0;
+  private lastTranslateY: number = 0;
+  private isPinching: boolean = false;
+  private lastTouchX: number = 0;
+  private lastTouchY: number = 0;
 
   constructor(private selector: string) {
     this.init();
@@ -102,6 +114,129 @@ class DialogLightbox {
         this.close();
       }
     });
+
+    // Attach pinch-to-zoom handlers
+    this.attachTouchHandlers();
+  }
+
+  private attachTouchHandlers(): void {
+    const imageContainer = this.dialog?.querySelector(
+      ".lightbox-image-container"
+    ) as HTMLDivElement;
+    const image = this.dialog?.querySelector(
+      ".lightbox-image"
+    ) as HTMLImageElement;
+
+    if (!imageContainer || !image) return;
+
+    // Prevent default touch behavior on the image container
+    imageContainer.addEventListener("touchstart", (e) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        this.isPinching = true;
+        this.initialDistance = this.getTouchDistance(e.touches);
+        this.lastScale = this.currentScale;
+      } else if (e.touches.length === 1 && this.currentScale > 1) {
+        // Single touch for panning when zoomed
+        e.preventDefault();
+        this.lastTouchX = e.touches[0].clientX;
+        this.lastTouchY = e.touches[0].clientY;
+        this.lastTranslateX = this.translateX;
+        this.lastTranslateY = this.translateY;
+      }
+    }, { passive: false });
+
+    imageContainer.addEventListener("touchmove", (e) => {
+      if (e.touches.length === 2 && this.isPinching) {
+        e.preventDefault();
+        const currentDistance = this.getTouchDistance(e.touches);
+        const scale = (currentDistance / this.initialDistance) * this.lastScale;
+        this.currentScale = Math.min(Math.max(scale, 1), 4); // Limit zoom 1x-4x
+        this.applyTransform(image);
+      } else if (e.touches.length === 1 && this.currentScale > 1) {
+        // Pan when zoomed in
+        e.preventDefault();
+        const deltaX = e.touches[0].clientX - this.lastTouchX;
+        const deltaY = e.touches[0].clientY - this.lastTouchY;
+        this.translateX = this.lastTranslateX + deltaX;
+        this.translateY = this.lastTranslateY + deltaY;
+        this.applyTransform(image);
+      }
+    }, { passive: false });
+
+    imageContainer.addEventListener("touchend", (e) => {
+      if (e.touches.length < 2) {
+        this.isPinching = false;
+      }
+      // Reset if zoomed out completely
+      if (this.currentScale <= 1) {
+        this.resetZoom(image);
+      }
+    });
+
+    // Double-tap to zoom
+    let lastTap = 0;
+    imageContainer.addEventListener("touchend", (e) => {
+      if (e.touches.length === 0 && e.changedTouches.length === 1) {
+        const now = Date.now();
+        if (now - lastTap < 300) {
+          // Double tap detected
+          e.preventDefault();
+          if (this.currentScale > 1) {
+            this.resetZoom(image);
+          } else {
+            // Zoom to 2x centered on tap position
+            const rect = imageContainer.getBoundingClientRect();
+            const tapX = e.changedTouches[0].clientX - rect.left;
+            const tapY = e.changedTouches[0].clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            this.currentScale = 2;
+            this.translateX = (centerX - tapX);
+            this.translateY = (centerY - tapY);
+            this.applyTransform(image);
+          }
+        }
+        lastTap = now;
+      }
+    });
+  }
+
+  private getTouchDistance(touches: TouchList): number {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  private applyTransform(image: HTMLImageElement): void {
+    image.style.transform = `translate3d(${this.translateX}px, ${this.translateY}px, 0) scale(${this.currentScale})`;
+    
+    // Update sizes attribute to trigger higher resolution image loading when zoomed
+    // This tells the browser the image is being displayed larger than actual viewport
+    this.updateImageSizesForZoom(image);
+  }
+
+  private updateImageSizesForZoom(image: HTMLImageElement): void {
+    // Calculate effective display size based on zoom level
+    // When zoomed to 2x, we need 2x the pixels for sharp display
+    const baseSize = window.innerWidth <= 768 ? 95 : 90;
+    const effectiveSize = Math.min(baseSize * this.currentScale, 100 * 4); // Cap at 4x viewport
+    
+    // Update sizes to tell browser to load higher resolution
+    image.sizes = `${effectiveSize}vw`;
+  }
+
+  private resetZoom(image: HTMLImageElement): void {
+    this.currentScale = 1;
+    this.translateX = 0;
+    this.translateY = 0;
+    this.lastScale = 1;
+    this.lastTranslateX = 0;
+    this.lastTranslateY = 0;
+    image.style.transform = "translate3d(0, 0, 0) scale(1)";
+    // Reset sizes to normal
+    image.sizes = "(max-width: 768px) 95vw, 90vw";
   }
 
   private attachThumbnailListeners(): void {
@@ -159,6 +294,9 @@ class DialogLightbox {
     ) as HTMLDivElement;
 
     if (imageElement && exifContainer) {
+      // Reset zoom when changing images
+      this.resetZoom(imageElement);
+      
       // Check if we should show the loading message (not on tiniest viewport where it's hidden anyway)
       const shouldShowLoadingMessage = window.innerWidth > 737;
 
