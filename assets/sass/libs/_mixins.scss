@@ -1,4 +1,5 @@
-/// Makes an element's :before pseudoelement a FontAwesome icon.
+/// Mixin for icon styling (legacy, kept for reference).
+/// Note: Icons are now rendered as inline SVG from icons.js
 /// @param {string} $content Optional content value to use.
 /// @param {string} $category Optional category to use.
 /// @param {string} $where Optional pseudoelement to target (before or after).
