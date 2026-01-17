@@ -35,7 +35,6 @@ crashlytics-build.properties
 _site/
 .sass-cache/
 .jekyll-metadata
-_data/asset-hashes.json
 
 ### Node template
 # Logs

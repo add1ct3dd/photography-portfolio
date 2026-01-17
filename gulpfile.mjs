@@ -320,7 +320,7 @@ gulp.task('generate-hashes', async function () {
 });
 
 // build task
-gulp.task('build', gulp.series('compile-ts', 'sass', 'minify-css', 'minify-js', 'generate-hashes'));
+gulp.task('build', gulp.series('compile-ts', gulp.parallel('sass', 'minify-js'), 'minify-css', 'generate-hashes'));
 
 // resize images (incremental - only new images)
 gulp.task('resize', gulp.series('resize-images'));
