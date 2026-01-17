@@ -117,6 +117,7 @@ class DialogLightbox {
         const handleTouchEnd = (_e) => {
             if (_e.touches.length < 2) {
                 this.isPinching = false;
+                this.lastScale = this.currentScale;
             }
             if (this.currentScale <= 1) {
                 this.resetZoom(image);
