@@ -28,7 +28,13 @@ jobs:
       - name: Install Node dependencies
         run: npm ci
 
-      - name: Build with compression (includes CSS + Jekyll)
+      - name: Build CSS with Gulp
+        run: npm run build:css
+
+      - name: Build site with Jekyll
+        run: bundle exec jekyll build
+
+      - name: Compress assets with gzip
         run: npm run build:prod
 
       - name: Deploy to GitHub Pages
