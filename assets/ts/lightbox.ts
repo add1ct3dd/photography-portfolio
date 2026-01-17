@@ -14,15 +14,6 @@ interface ExifData {
   [imageName: string]: string;
 }
 
-interface EXIFLibrary {
-  getData: (img: HTMLImageElement, callback: () => void) => void;
-  getTag: (img: HTMLImageElement, tag: string) => string | undefined;
-}
-
-interface IconsLibrary {
-  [key: string]: string;
-}
-
 class DialogLightbox {
   private dialog: HTMLDialogElement | null = null;
   private currentImageIndex: number = 0;
@@ -50,8 +41,8 @@ class DialogLightbox {
     if (mainElement && mainElement.dataset.exif) {
       try {
         this.exifConfig = JSON.parse(mainElement.dataset.exif);
-      } catch (e) {
-        // EXIF config parsing failed
+      } catch {
+        void 0; // Intentionally ignore EXIF config parsing errors
       }
     }
 
@@ -106,8 +97,8 @@ class DialogLightbox {
     nextBtn.addEventListener("click", () => this.nextImage());
 
     // Close on backdrop click
-    this.dialog.addEventListener("click", (e) => {
-      if (e.target === this.dialog) {
+    this.dialog.addEventListener("click", (event) => {
+      if (event.target === this.dialog) {
         this.close();
       }
     });
@@ -123,10 +114,10 @@ class DialogLightbox {
   }
 
   private attachKeyboardListeners(): void {
-    document.addEventListener("keydown", (e) => {
+    document.addEventListener("keydown", (event) => {
       if (!this.dialog || !this.dialog.open) return;
 
-      switch (e.key) {
+      switch (event.key) {
         case "Escape":
           this.close();
           break;
@@ -265,7 +256,7 @@ class DialogLightbox {
       if (img && img.src) {
         // Create a fresh image element to avoid EXIF.js caching issues
         const tempImg = new Image();
-        
+
         tempImg.onload = () => {
           window.EXIF?.getData(tempImg, () => {
             const markup = this.getExifDataMarkup(tempImg, imgName);
@@ -273,25 +264,25 @@ class DialogLightbox {
             container.innerHTML = markup;
           });
         };
-        
+
         tempImg.onerror = () => {
           container.innerHTML = "<p>View on Flickr</p>";
         };
-        
+
         // Set the src to trigger load
         tempImg.src = img.src;
       } else {
         container.innerHTML = "<p>View on Flickr</p>";
       }
-    } catch (e) {
+    } catch {
       container.innerHTML = "<p>View on Flickr</p>";
     }
   }
 
-  private getExifDataMarkup(img: HTMLImageElement, imgName: string): string {
+  private getExifDataMarkup(img: HTMLImageElement, _imgName: string): string {
     const EXIF = window.EXIF;
     const icons = window.icons || {};
-    
+
     let template = "";
 
     // Add EXIF tags

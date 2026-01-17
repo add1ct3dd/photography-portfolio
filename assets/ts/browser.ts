@@ -49,11 +49,11 @@ function initBrowserDetection(): void {
 
   // Detect browser from UA (fallback for older detection needs)
   const browserPatterns: Array<[string, RegExp]> = [
-    ['firefox', /Firefox\/([0-9\.]+)/],
-    ['opera', /OPR\/([0-9\.]+)/],
-    ['edge', /Edg(?:e)?\/([0-9\.]+)/],
-    ['safari', /Version\/([0-9\.]+).+Safari/],
-    ['chrome', /Chrome\/([0-9\.]+)/],
+    ['firefox', /Firefox\/([0-9.]+)/],
+    ['opera', /OPR\/([0-9.]+)/],
+    ['edge', /Edg(?:e)?\/([0-9.]+)/],
+    ['safari', /Version\/([0-9.]+).+Safari/],
+    ['chrome', /Chrome\/([0-9.]+)/],
     ['ie', /MSIE ([0-9]+)|Trident\/.+rv:([0-9]+)/]
   ];
 
@@ -94,7 +94,7 @@ function initBrowserDetection(): void {
   browser.touch = (
     'ontouchstart' in window ||
     navigator.maxTouchPoints > 0 ||
-    (navigator as any).msMaxTouchPoints > 0
+    (navigator as unknown as { msMaxTouchPoints: number }).msMaxTouchPoints > 0
   );
 
   // Detect mobile

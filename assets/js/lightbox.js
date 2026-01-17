@@ -20,7 +20,8 @@ class DialogLightbox {
             try {
                 this.exifConfig = JSON.parse(mainElement.dataset.exif);
             }
-            catch (e) {
+            catch {
+                void 0;
             }
         }
         this.createDialog();
@@ -56,8 +57,8 @@ class DialogLightbox {
         closeBtn.addEventListener("click", () => this.close());
         prevBtn.addEventListener("click", () => this.previousImage());
         nextBtn.addEventListener("click", () => this.nextImage());
-        this.dialog.addEventListener("click", (e) => {
-            if (e.target === this.dialog) {
+        this.dialog.addEventListener("click", (event) => {
+            if (event.target === this.dialog) {
                 this.close();
             }
         });
@@ -71,10 +72,10 @@ class DialogLightbox {
         });
     }
     attachKeyboardListeners() {
-        document.addEventListener("keydown", (e) => {
+        document.addEventListener("keydown", (event) => {
             if (!this.dialog || !this.dialog.open)
                 return;
-            switch (e.key) {
+            switch (event.key) {
                 case "Escape":
                     this.close();
                     break;
@@ -182,11 +183,11 @@ class DialogLightbox {
                 container.innerHTML = "<p>View on Flickr</p>";
             }
         }
-        catch (e) {
+        catch {
             container.innerHTML = "<p>View on Flickr</p>";
         }
     }
-    getExifDataMarkup(img, imgName) {
+    getExifDataMarkup(img, _imgName) {
         const EXIF = window.EXIF;
         const icons = window.icons || {};
         let template = "";

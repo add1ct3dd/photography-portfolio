@@ -20,11 +20,11 @@ const browser = {
 function initBrowserDetection() {
     const ua = navigator.userAgent;
     const browserPatterns = [
-        ['firefox', /Firefox\/([0-9\.]+)/],
-        ['opera', /OPR\/([0-9\.]+)/],
-        ['edge', /Edg(?:e)?\/([0-9\.]+)/],
-        ['safari', /Version\/([0-9\.]+).+Safari/],
-        ['chrome', /Chrome\/([0-9\.]+)/],
+        ['firefox', /Firefox\/([0-9.]+)/],
+        ['opera', /OPR\/([0-9.]+)/],
+        ['edge', /Edg(?:e)?\/([0-9.]+)/],
+        ['safari', /Version\/([0-9.]+).+Safari/],
+        ['chrome', /Chrome\/([0-9.]+)/],
         ['ie', /MSIE ([0-9]+)|Trident\/.+rv:([0-9]+)/]
     ];
     for (const [name, pattern] of browserPatterns) {
