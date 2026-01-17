@@ -5,7 +5,7 @@
   "main": "index.html",
   "scripts": {
     "build": "npm run build:css && jekyll build",
-    "build:prod": "npm run build:css && gulp build:prod && jekyll build",
+    "build:prod": "gulp build:prod",
     "build:css": "gulp build",
     "watch": "gulp sass:watch",
     "resize": "gulp resize",
