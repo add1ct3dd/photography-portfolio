@@ -7,66 +7,7 @@
   "background_color": "#242629",
   "theme_color": "#34a58e",
   "orientation": "portrait-primary",
-  "icons": [
-    {
-      "src": "/assets/favicon.ico",
-      "sizes": "32x32",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "/assets/apple-touch-icon.png",
-      "sizes": "180x180",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/assets/apple-touch-icon.png",
-      "sizes": "180x180",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ],
-  "categories": ["photography"],
-  "screenshots": [
-    {
-      "src": "/images/screenshot-540x720.png",
-      "sizes": "540x720",
-      "type": "image/png",
-      "form_factor": "narrow"
-    },
-    {
-      "src": "/images/screenshot-1280x720.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "View Gallery",
-      "short_name": "Gallery",
-      "description": "View the photo gallery",
-      "url": "/?source=pwa",
-      "icons": [
-        {
-          "src": "/assets/favicon.ico",
-          "sizes": "96x96",
-          "type": "image/x-icon"
-        }
-      ]
-    }
-  ],
-  "share_target": {
-    "action": "/share",
-    "method": "POST",
-    "enctype": "multipart/form-data",
-    "params": {
-      "files": [
-        {
-          "name": "photo",
-          "accept": ["image/jpeg", "image/png", "image/webp"]
-        }
-      ]
-    }
-  }
+  "categories": [
+    "photography"
+  ]
 }

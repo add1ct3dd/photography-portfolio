@@ -1,8 +1,8 @@
 {
   "name": "photography",
-  "version": "5.0.0",
-  "description": "A jekyll website for photographer cum developer",
-  "main": "npmfile.js",
+  "version": "1.0.0",
+  "description": "A jekyll website for photographer & developer",
+  "main": "index.html",
   "scripts": {
     "build": "npm run build:css && jekyll build",
     "build:css": "gulp build",
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rampatra/photography.git"
+    "url": "git+https://github.com/add1ct3dd/photography-portfolio.git"
   },
   "keywords": [
     "photography",
@@ -25,12 +25,12 @@
     "portfolio",
     "portfolio website"
   ],
-  "author": "Ram Patra",
+  "author": "Matthew Evans",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/rampatra/photography/issues"
+    "url": "https://github.com/add1ct3dd/photography-portfolio/issues"
   },
-  "homepage": "https://github.com/rampatra/photography#readme",
+  "homepage": "https://github.com/add1ct3dd/photography-portfolio#readme",
   "devDependencies": {
     "@babel/core": "^7.23.0",
     "@babel/preset-env": "^7.23.0",

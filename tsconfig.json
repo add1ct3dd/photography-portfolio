@@ -2,7 +2,11 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "ESNext",
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "declaration": true,
     "declarationMap": true,
     "outDir": "./assets/js",
@@ -17,8 +21,16 @@
     "removeComments": true,
     "noEmit": false,
     "sourceMap": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
-  "include": ["assets/ts/**/*.ts"],
-  "exclude": ["node_modules", "assets/js/**/*.js", "_site"]
+  "include": [
+    "assets/ts/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "assets/js/**/*.js",
+    "_site"
+  ]
 }

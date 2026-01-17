@@ -1,357 +1,254 @@
-/*
-	Multiverse by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+/**
+ * Main site initialization without jQuery
+ * Handles breakpoints, browser detection, responsive behavior, and EXIF loading
+ */
 
-	Added EXIF data and enhanced for Jekyll by Ram Patra
-*/
+// Breakpoints.
+breakpoints({
+	xlarge: ["1281px", "1680px"],
+	large: ["981px", "1280px"],
+	medium: ["737px", "980px"],
+	small: ["481px", "736px"],
+	xsmall: [null, "480px"],
+});
 
-(function ($) {
-	var $window = $(window),
-		$body = $("body"),
-		$wrapper = $("#wrapper");
+const body = document.body;
+const wrapper = document.getElementById("wrapper");
 
-	// Breakpoints.
-	breakpoints({
-		xlarge: ["1281px", "1680px"],
-		large: ["981px", "1280px"],
-		medium: ["737px", "980px"],
-		small: ["481px", "736px"],
-		xsmall: [null, "480px"],
+// Hack: Enable IE workarounds.
+if (browser.name == "ie") body.classList.add("ie");
+
+// Touch?
+if (browser.mobile) body.classList.add("touch");
+
+// Transitions supported?
+if (browser.canUse("transition")) {
+	// Play initial animations on page load.
+	window.addEventListener("load", function () {
+		window.setTimeout(function () {
+			body.classList.remove("is-preload");
+		}, 100);
 	});
 
-	// Hack: Enable IE workarounds.
-	if (browser.name == "ie") $body.addClass("ie");
+	// Prevent transitions/animations on resize.
+	let resizeTimeout;
 
-	// Touch?
-	if (browser.mobile) $body.addClass("touch");
+	window.addEventListener("resize", function () {
+		window.clearTimeout(resizeTimeout);
 
-	// Transitions supported?
-	if (browser.canUse("transition")) {
-		// Play initial animations on page load.
-		$window.on("load", function () {
-			window.setTimeout(function () {
-				$body.removeClass("is-preload");
-			}, 100);
+		body.classList.add("is-resizing");
+
+		resizeTimeout = window.setTimeout(function () {
+			body.classList.remove("is-resizing");
+		}, 100);
+	});
+}
+
+// Keyboard navigation for accessibility
+document.addEventListener("keydown", function (event) {
+	if (event.key === "Escape" && body.classList.contains("content-active")) {
+		// Close any open panels when ESC is pressed
+		const panels = document.querySelectorAll(".panel");
+		panels.forEach((panel) => {
+			if (panel.classList.contains("active")) {
+				panel.classList.remove("active");
+			}
 		});
-
-		// Prevent transitions/animations on resize.
-		var resizeTimeout;
-
-		$window.on("resize", function () {
-			window.clearTimeout(resizeTimeout);
-
-			$body.addClass("is-resizing");
-
-			resizeTimeout = window.setTimeout(function () {
-				$body.removeClass("is-resizing");
-			}, 100);
-		});
+		body.classList.remove("content-active");
 	}
+});
 
-	// Keyboard navigation for accessibility
-	document.addEventListener('keydown', function(event) {
-		if (event.key === 'Escape' && $body.hasClass('content-active')) {
-			// Close any open panels when ESC is pressed
-			$panels.trigger('---hide');
-		}
+// Scroll back to top.
+window.scrollTop = 0;
+
+// Panels.
+const panels = document.querySelectorAll(".panel");
+
+panels.forEach((panel) => {
+	const panelId = panel.getAttribute("id");
+	const toggles = document.querySelectorAll(`[href="#${panelId}"]`);
+	const closer = document.createElement("div");
+	closer.className = "closer";
+	panel.appendChild(closer);
+
+	// Closer.
+	closer.addEventListener("click", function (event) {
+		hidePanel(panel, toggles);
 	});
 
-	// Scroll back to top.
-	$window.scrollTop(0);
-
-	// Panels.
-	var $panels = $(".panel");
-
-	$panels.each(function () {
-		var $this = $(this),
-			$toggles = $('[href="#' + $this.attr("id") + '"]'),
-			$closer = $('<div class="closer" />').appendTo($this);
-
-		// Closer.
-		$closer.on("click", function (event) {
-			$this.trigger("---hide");
-		});
-
-		// Events.
-		$this
-			.on("click", function (event) {
-				event.stopPropagation();
-			})
-			.on("---toggle", function () {
-				if ($this.hasClass("active")) $this.triggerHandler("---hide");
-				else $this.triggerHandler("---show");
-			})
-			.on("---show", function () {
-				// Hide other content.
-				if ($body.hasClass("content-active")) $panels.trigger("---hide");
-
-				// Activate content, toggles.
-				$this.addClass("active");
-				$toggles.addClass("active");
-
-				// Activate body.
-				$body.addClass("content-active");
-			})
-			.on("---hide", function () {
-				// Deactivate content, toggles.
-				$this.removeClass("active");
-				$toggles.removeClass("active");
-
-				// Deactivate body.
-				$body.removeClass("content-active");
-			});
-
-		// Toggles.
-		$toggles
-			.removeAttr("href")
-			.css("cursor", "pointer")
-			.on("click", function (event) {
-				event.preventDefault();
-				event.stopPropagation();
-
-				$this.trigger("---toggle");
-			});
+	// Panel click handlers
+	panel.addEventListener("click", function (event) {
+		event.stopPropagation();
 	});
 
-	// Global events.
-	$body.on("click", function (event) {
-		if ($body.hasClass("content-active")) {
+	// Toggle button handlers
+	toggles.forEach((toggle) => {
+		toggle.addEventListener("click", function (event) {
 			event.preventDefault();
-			event.stopPropagation();
+			if (panel.classList.contains("active")) {
+				hidePanel(panel, toggles);
+			} else {
+				showPanel(panel, toggles);
+			}
+		});
+	});
+});
 
-			$panels.trigger("---hide");
+// Close panel when clicking outside of it
+document.addEventListener("click", function (event) {
+	const activePanels = document.querySelectorAll(".panel.active");
+	activePanels.forEach((panel) => {
+		// Check if click is outside the panel and not on a toggle button
+		const panelId = panel.getAttribute("id");
+		const toggles = document.querySelectorAll(`[href="#${panelId}"]`);
+		let isClickOnToggle = false;
+
+		toggles.forEach((toggle) => {
+			if (toggle.contains(event.target)) {
+				isClickOnToggle = true;
+			}
+		});
+
+		// Close if click is outside panel and not on toggle button
+		if (!panel.contains(event.target) && !isClickOnToggle) {
+			hidePanel(panel, toggles);
+		}
+	});
+});
+
+// Panel show/hide functions
+function showPanel(panel, toggles) {
+	// Hide other panels
+	const otherPanels = document.querySelectorAll(".panel");
+	otherPanels.forEach((p) => {
+		if (p !== panel && p.classList.contains("active")) {
+			const otherToggles = document.querySelectorAll(
+				`[href="#${p.getAttribute("id")}"]`
+			);
+			hidePanel(p, otherToggles);
 		}
 	});
 
-	$window.on("keyup", function (event) {
-		if (event.keyCode == 27 && $body.hasClass("content-active")) {
-			event.preventDefault();
-			event.stopPropagation();
+	// Activate this panel
+	panel.classList.add("active");
+	toggles.forEach((t) => t.classList.add("active"));
+	body.classList.add("content-active");
+}
 
-			$panels.trigger("---hide");
-		}
-	});
+function hidePanel(panel, toggles) {
+	panel.classList.remove("active");
+	toggles.forEach((t) => t.classList.remove("active"));
+	body.classList.remove("content-active");
+}
 
-	// Header.
-	var $header = $("#header");
+// Load EXIF data on images
+const exifDatas = {};
+const main = document.getElementById("main");
 
-	// Links.
-	$header.find("a").each(function () {
-		var $this = $(this),
-			href = $this.attr("href");
+if (main) {
+	const thumbs = main.querySelectorAll(".thumb");
 
-		// Internal link? Skip.
-		if (!href || href.charAt(0) == "#") return;
+	thumbs.forEach((thumb) => {
+		const image = thumb.querySelector(".image");
+		const imageImg = image?.querySelector("img");
 
-		// Redirect on click.
-		$this
-			.removeAttr("href")
-			.css("cursor", "pointer")
-			.on("click", function (event) {
-				event.preventDefault();
-				event.stopPropagation();
+		if (!image) return;
 
-				window.location.href = href;
-			});
-	});
-
-	// Footer.
-	var $footer = $("#footer");
-
-	// Copyright.
-	// This basically just moves the copyright line to the end of the *last* sibling of its current parent
-	// when the "medium" breakpoint activates, and moves it back when it deactivates.
-	$footer.find(".copyright").each(function () {
-		var $this = $(this),
-			$parent = $this.parent(),
-			$lastParent = $parent.parent().children().last();
-
-		breakpoints.on("<=medium", function () {
-			$this.appendTo($lastParent);
-		});
-
-		breakpoints.on(">medium", function () {
-			$this.appendTo($parent);
-		});
-	});
-
-	// Main.
-	var $main = $("#main"),
-		exifDatas = {};
-
-	// Thumbs.
-	$main.children(".thumb").each(function () {
-		var $this = $(this),
-			$image = $this.find(".image"),
-			$image_img = $image.find("img"),
-			x;
-
-		// No image? Bail.
-		if ($image.length == 0) return;
-
-		// Image.
-		// This sets the background of the "image" <span> to the image pointed to by its child
-		// <img> (which is then hidden). Gives us way more flexibility.
-
-		// Handle both lazy-loaded (data-src) and regular (src) images
-		var setSrcBackground = function() {
-			var src = $image_img.attr("src");
-			if (src && src !== 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7') {
-				$image.css("background-image", "url(" + src + ")");
+		// Set initial background if src exists
+		const setSrcBackground = function () {
+			const src = imageImg.getAttribute("src");
+			if (src && !src.includes("data:image/gif")) {
+				image.style.backgroundImage = `url(${src})`;
 			}
 		};
 
-		// Set initial background if src exists, or wait for lazy load
 		setSrcBackground();
 
-		// Set background position.
-		if ((x = $image_img.data("position"))) $image.css("background-position", x);
+		// Set background position
+		const position = imageImg?.dataset.position;
+		if (position) {
+			image.style.backgroundPosition = position;
+		}
 
-		// Hide original img.
-		$image_img.hide();
+		// Hide original img
+		if (imageImg) {
+			imageImg.style.display = "none";
 
-		// EXIF data - wait for image to load via lazy loading
-		var attachExifListener = function() {
-			var handlerCalled = false;
-			
-			var loadHandler = function () {
-				if (handlerCalled) return; // Prevent duplicate calls
-				handlerCalled = true;
-				
-				EXIF.getData($image_img[0], function () {
-					exifDatas[$image_img.data('name')] = getExifDataMarkup(this);
-				});
-				// Also set background when image loads
-				setSrcBackground();
-			};
+			// Load EXIF data
+			const loadExif = function () {
+				const name = imageImg.dataset.name;
+				if (!name || exifDatas[name]) return;
 
-			// Attach load listeners first - these will catch all async-loaded images
-			$image_img.on("load", loadHandler);
-			$image_img[0].addEventListener("load", loadHandler);
-			
-			// Check if image is already complete with a real src (cached/synchronous)
-			var checkImmediate = function() {
-				var src = $image_img.attr("src");
-				var isPlaceholder = src === 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-				
-				if ($image_img[0].complete && src && !isPlaceholder) {
-					// Use Promise microtask instead of timeout to defer EXIF reading
-					// This ensures image data is fully decoded before EXIF reads it
-					Promise.resolve().then(loadHandler);
+				if (window.EXIF) {
+					window.EXIF.getData(imageImg, function () {
+						exifDatas[name] = getExifDataMarkup(imageImg);
+					});
 				}
 			};
-			
-			// Check immediately
-			checkImmediate();
-			
-			// Watch for src attribute changes when lazy loader sets real image
-			if ('MutationObserver' in window) {
-				var observer = new MutationObserver(function(mutations) {
-					mutations.forEach(function(mutation) {
-						if (mutation.attributeName === 'src') {
-							// Src changed - check if already complete, otherwise load event will fire
-							checkImmediate();
+
+			// Load on image complete
+			if (imageImg.complete) {
+				Promise.resolve().then(loadExif);
+			} else {
+				imageImg.addEventListener("load", loadExif);
+			}
+
+			// Watch for src attribute changes (lazy loading)
+			if ("MutationObserver" in window) {
+				const observer = new MutationObserver(function (mutations) {
+					mutations.forEach(function (mutation) {
+						if (mutation.attributeName === "src") {
+							setSrcBackground();
+							loadExif();
 						}
 					});
 				});
-				
-				observer.observe($image_img[0], {
+
+				observer.observe(imageImg, {
 					attributes: true,
-					attributeFilter: ['src']
+					attributeFilter: ["src"],
 				});
 			}
-		};
-
-		// Attach EXIF listener after lazyload.js has initialized
-		// Delay until DOMContentLoaded to ensure lazyload.js has set up all observers
-		if (document.readyState === 'loading') {
-			document.addEventListener('DOMContentLoaded', attachExifListener);
-		} else {
-			// Already past DOMContentLoaded, defer to next microtask to be safe
-			Promise.resolve().then(attachExifListener);
 		}
 	});
+}
 
-	// Poptrox.
-	$main.poptrox({
-		baseZIndex: 20000,
-		caption: function ($a) {
-			var $image_img = $a.find('img');
-			var imgName = $image_img.data('name');
-			var data = exifDatas[imgName];
-			
-			if (data === undefined && $image_img.length > 0) {
-				var img = $image_img[0];
-				if (img && img.src) {
-					EXIF.getData(img, function () {
-						exifDatas[imgName] = getExifDataMarkup(this);
-					});
-				}
-			}
-			return data !== undefined ? '<p>' + data + '</p>' : ' ';
-		},
-		fadeSpeed: 300,
-		onPopupClose: function () {
-			$body.removeClass("modal-active");
-		},
-		onPopupOpen: function () {
-			$body.addClass("modal-active");
-		},
-		overlayOpacity: 0,
-		popupCloserText: "",
-		popupHeight: 150,
-		popupLoaderText: "",
-		popupSpeed: 300,
-		popupWidth: 150,
-		selector: ".thumb > a.image",
-		usePopupCaption: true,
-		usePopupCloser: true,
-		usePopupDefaultStyling: false,
-		usePopupForceClose: true,
-		usePopupLoader: true,
-		usePopupNav: true,
-		windowMargin: 50,
-	});
+// Generate EXIF data markup
+function getExifDataMarkup(img) {
+	const exifConfig = main ? JSON.parse(main.dataset.exif || "{}") : {};
+	let template = "";
 
-	// Hack: Set margins to 0 when 'xsmall' activates.
-	breakpoints.on("<=xsmall", function () {
-		$main[0]._poptrox.windowMargin = 0;
-	});
+	// Add EXIF tags
+	for (const current in exifConfig) {
+		const currentData = exifConfig[current];
+		if (!window.EXIF) break;
 
-	breakpoints.on(">xsmall", function () {
-		$main[0]._poptrox.windowMargin = 50;
-	});
+		const exifValue = window.EXIF.getTag(img, currentData.tag);
 
-	function getExifDataMarkup(img) {
-		var exif = $('#main').data('exif');
-		var template = '';
+		if (typeof exifValue !== "undefined") {
+			const iconSvg = getIconSvg(window.icons || {}, currentData.icon);
+			const tagName = currentData.tag.split(/(?=[A-Z])/).join(" ");
+			template += `<span title="${tagName}: ${exifValue}">${iconSvg} ${exifValue}</span>&nbsp;&nbsp;`;
 
-		for (var current in exif) {
-			var current_data = exif[current];
-			var exif_data = EXIF.getTag(img, current_data['tag']);
-			if (typeof exif_data !== "undefined") {
-				var iconSvg = getIconSvg(current_data['icon']);
-				template += '<span title="' + current_data['tag'].split(/(?=[A-Z])/).join(" ") + ": " + exif_data + '">' + iconSvg + ' ' + exif_data + '</span>&nbsp;&nbsp;';
-				if (current_data['tag'] === "LensModel") { template += "</br>"; }
+			if (currentData.tag === "LensModel") {
+				template += "<br>";
 			}
 		}
-
-		var flickrImgUrl = img['src'].split('_')[0].split('/images/thumbs/')[1];
-		template += '<a target="_blank" style="float:right;" href="https://flickr.com/photos/matthew-evans/' + flickrImgUrl + '/">' + getIconSvg('flickr') + ' View on Flickr</a>';
-
-		return template;
 	}
 
-	// Icon SVG data
-	function getIconSvg(iconName) {
-		// Use global icons object from icons.js and add icon-inline class
-		var svgString = window.icons[iconName] || '';
-		if (svgString) {
-			// Add icon-inline class if not already present
-			svgString = svgString.replace('<svg', '<svg class="icon-inline"');
-		}
-		return svgString;
-	}
+	// Add Flickr link
+	const flickrImgUrl = img.src.split("_")[0].split("/images/fulls/")[1];
+	const flickrIcon = getIconSvg(window.icons || {}, "flickr");
+	template += `<a target="_blank" style="float:right;" href="https://flickr.com/photos/matthew-evans/${flickrImgUrl}/">${flickrIcon} View on Flickr</a>`;
 
-})(jQuery);
+	return template;
+}
+
+// Icon SVG helper
+function getIconSvg(icons, iconName) {
+	let svgString = icons[iconName] || "";
+	if (svgString) {
+		svgString = svgString.replace("<svg", '<svg class="icon-inline"');
+	}
+	return svgString;
+}
