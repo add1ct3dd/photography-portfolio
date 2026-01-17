@@ -33,7 +33,7 @@ class DialogLightbox {
   private isPinching: boolean = false;
   private lastTouchX: number = 0;
   private lastTouchY: number = 0;
-  private maxZoom: number = 16; // Default, will be calculated based on image size
+  private maxZoom: number = 1; // Default until calculated from actual image
 
   constructor(private selector: string) {
     this.init();
@@ -425,17 +425,26 @@ class DialogLightbox {
         // Adjust dialog size to fit the image
         this.adjustDialogSize(imageElement);
 
-        // Calculate max zoom to allow 1:1 pixel viewing
-        // Based on how much we'd need to scale up to show actual pixels
-        const displayWidth = imageElement.clientWidth || window.innerWidth * 0.95;
-        const displayHeight = imageElement.clientHeight || window.innerHeight * 0.8;
-        const naturalWidth = imageElement.naturalWidth || 3440;
-        const naturalHeight = imageElement.naturalHeight || 1440;
+        // Calculate max zoom to allow exactly 1:1 pixel viewing (no more)
+        // The image is scaled to fit container, so we need to find how much
+        // it was scaled down from natural size
+        const displayWidth = imageElement.clientWidth;
+        const displayHeight = imageElement.clientHeight;
+        const naturalWidth = imageElement.naturalWidth;
+        const naturalHeight = imageElement.naturalHeight;
         
-        // Max zoom needed for 1:1 viewing is the larger ratio of natural/display dimensions
-        const zoomForWidth = naturalWidth / displayWidth;
-        const zoomForHeight = naturalHeight / displayHeight;
-        this.maxZoom = Math.max(zoomForWidth, zoomForHeight, 1);
+        if (displayWidth && displayHeight && naturalWidth && naturalHeight) {
+          // The image maintains aspect ratio, so the actual scale is determined
+          // by whichever dimension is the limiting factor
+          const scaleX = naturalWidth / displayWidth;
+          const scaleY = naturalHeight / displayHeight;
+          // Use the smaller ratio - that's how much the image was scaled to fit
+          // Zooming by that amount gets us to 1:1
+          this.maxZoom = Math.min(scaleX, scaleY);
+        } else {
+          // Fallback: assume reasonable max based on viewport
+          this.maxZoom = Math.max(3440 / window.innerWidth, 1);
+        }
         
         // Fade in the image smoothly
         requestAnimationFrame(() => {

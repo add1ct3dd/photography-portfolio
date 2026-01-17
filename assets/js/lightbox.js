@@ -18,7 +18,7 @@ class DialogLightbox {
         this.isPinching = false;
         this.lastTouchX = 0;
         this.lastTouchY = 0;
-        this.maxZoom = 16;
+        this.maxZoom = 1;
         this.init();
     }
     init() {
@@ -300,13 +300,18 @@ class DialogLightbox {
             imageElement.decoding = "async";
             imageElement.onload = () => {
                 this.adjustDialogSize(imageElement);
-                const displayWidth = imageElement.clientWidth || window.innerWidth * 0.95;
-                const displayHeight = imageElement.clientHeight || window.innerHeight * 0.8;
-                const naturalWidth = imageElement.naturalWidth || 3440;
-                const naturalHeight = imageElement.naturalHeight || 1440;
-                const zoomForWidth = naturalWidth / displayWidth;
-                const zoomForHeight = naturalHeight / displayHeight;
-                this.maxZoom = Math.max(zoomForWidth, zoomForHeight, 1);
+                const displayWidth = imageElement.clientWidth;
+                const displayHeight = imageElement.clientHeight;
+                const naturalWidth = imageElement.naturalWidth;
+                const naturalHeight = imageElement.naturalHeight;
+                if (displayWidth && displayHeight && naturalWidth && naturalHeight) {
+                    const scaleX = naturalWidth / displayWidth;
+                    const scaleY = naturalHeight / displayHeight;
+                    this.maxZoom = Math.min(scaleX, scaleY);
+                }
+                else {
+                    this.maxZoom = Math.max(3440 / window.innerWidth, 1);
+                }
                 requestAnimationFrame(() => {
                     imageElement.style.opacity = "1";
                 });
