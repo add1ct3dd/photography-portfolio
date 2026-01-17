@@ -167,13 +167,65 @@ class DialogLightbox {
       }
     };
 
-    const handleTouchEnd = (_e: TouchEvent) => {
-      if (_e.touches.length < 2) {
+    // Double-tap detection state
+    let lastTapTime = 0;
+    let lastTapX = 0;
+    let lastTapY = 0;
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      // Check for double-tap first (before other end logic)
+      if (e.touches.length === 0 && e.changedTouches.length === 1) {
+        const now = Date.now();
+        const touch = e.changedTouches[0];
+        const tapX = touch.clientX;
+        const tapY = touch.clientY;
+        
+        // Check if this is a double-tap (within 300ms and 50px of last tap)
+        const timeDiff = now - lastTapTime;
+        const distDiff = Math.sqrt(Math.pow(tapX - lastTapX, 2) + Math.pow(tapY - lastTapY, 2));
+        
+        if (timeDiff < 300 && distDiff < 50) {
+          // Double tap detected
+          e.preventDefault();
+          e.stopPropagation();
+          
+          if (this.currentScale > 1) {
+            this.resetZoom(image);
+          } else {
+            // Zoom to 1:1 (maxZoom) centered on tap position
+            const rect = imageContainer.getBoundingClientRect();
+            const relTapX = tapX - rect.left;
+            const relTapY = tapY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+
+            this.currentScale = this.maxZoom;
+            this.lastScale = this.maxZoom;
+            // Translate to center on tap position
+            this.translateX = (centerX - relTapX) * (this.maxZoom - 1);
+            this.translateY = (centerY - relTapY) * (this.maxZoom - 1);
+            this.applyTransform(image);
+          }
+          
+          // Reset tap tracking
+          lastTapTime = 0;
+          return;
+        }
+        
+        // Record this tap for potential double-tap
+        lastTapTime = now;
+        lastTapX = tapX;
+        lastTapY = tapY;
+      }
+      
+      // Handle pinch end
+      if (e.touches.length < 2 && this.isPinching) {
         this.isPinching = false;
         // Preserve zoom level for next pinch gesture
         this.lastScale = this.currentScale;
       }
-      // Reset if zoomed out completely
+      
+      // Only reset if zoomed out completely AND not from a double-tap
       if (this.currentScale <= 1) {
         this.resetZoom(image);
       }
@@ -211,39 +263,6 @@ class DialogLightbox {
         }
       }, { passive: false });
     }
-
-    // Double-tap to zoom
-    let lastTap = 0;
-    const handleDoubleTap = (e: TouchEvent) => {
-      if (e.touches.length === 0 && e.changedTouches.length === 1) {
-        const now = Date.now();
-        if (now - lastTap < 300) {
-          // Double tap detected
-          e.preventDefault();
-          if (this.currentScale > 1) {
-            this.resetZoom(image);
-          } else {
-            // Zoom to 1:1 (maxZoom) centered on tap position
-            const rect = imageContainer.getBoundingClientRect();
-            const tapX = e.changedTouches[0].clientX - rect.left;
-            const tapY = e.changedTouches[0].clientY - rect.top;
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-
-            this.currentScale = this.maxZoom;
-            this.lastScale = this.maxZoom;
-            // Translate to center on tap position
-            this.translateX = (centerX - tapX) * (this.maxZoom - 1);
-            this.translateY = (centerY - tapY) * (this.maxZoom - 1);
-            this.applyTransform(image);
-          }
-        }
-        lastTap = now;
-      }
-    };
-
-    imageContainer.addEventListener("touchend", handleDoubleTap, { passive: false });
-    image.addEventListener("touchend", handleDoubleTap, { passive: false });
   }
 
   private getTouchDistance(touches: TouchList): number {
