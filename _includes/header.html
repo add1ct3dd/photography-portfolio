@@ -3,16 +3,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 <meta name="description" content="{{ site.footer.bio }}" />
 <meta name="author" content="{{ site.author }}" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com; upgrade-insecure-requests;">
 
-<!-- Load resources -->
-<link rel="stylesheet" href="assets/css/main.min.css" />
-<noscript><link rel="stylesheet" href="assets/css/noscript.min.css" /></noscript>
-<link rel="stylesheet" href="assets/css/custom.min.css" />
-<link rel="stylesheet" href="/assets/css/icons.css">
-<link rel="shortcut icon" href="assets/favicon.ico" />
+<!-- Inline critical CSS for faster first paint -->
+<style>
+{% include critical.css %}
+</style>
+
+<!-- Preload resources -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic">
+
+<!-- Defer non-critical stylesheets -->
+<link rel="preload" href="assets/css/main.min.css" as="style" onload="this.rel='stylesheet'">
+<link rel="preload" href="assets/css/custom.min.css" as="style" onload="this.rel='stylesheet'">
+<link rel="preload" href="/assets/css/icons.css" as="style" onload="this.rel='stylesheet'">
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic" as="style" onload="this.rel='stylesheet'">
+
+<!-- Fallback for no-JS -->
+<noscript>
+  <link rel="stylesheet" href="assets/css/main.min.css" />
+  <link rel="stylesheet" href="assets/css/noscript.min.css" />
+  <link rel="stylesheet" href="assets/css/custom.min.css" />
+  <link rel="stylesheet" href="/assets/css/icons.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300italic,400,400italic">
+</noscript>
+
+<link rel="shortcut icon" href="assets/favicon.ico" />
 
 {% if site.google_analytics %}
 <!-- Google tag (gtag.js) -->

@@ -1,0 +1,124 @@
+/* Critical CSS - Above the fold styles */
+/* Loaded inline to prevent render-blocking */
+
+:root {
+  --color-bg: #1a1a1a;
+  --color-fg: #d7dadc;
+  --color-accent: #ea8317;
+  --color-border: #3a3f47;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+html, body, div, span, p, a, h1, h2, h3, h4, h5, h6, 
+header, nav, main, footer, section {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 15pt;
+  font-weight: 300;
+  letter-spacing: 0.025em;
+  line-height: 1.65;
+}
+
+a {
+  border-bottom: dotted 1px;
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: color 0.25s ease-in-out, border-bottom-color 0.25s ease-in-out;
+}
+
+a:hover {
+  border-bottom-color: transparent;
+  color: var(--color-accent) !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #fff;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  line-height: 1.5;
+  margin: 0 0 0.5em 0;
+  text-transform: uppercase;
+}
+
+h1 {
+  font-size: 2em;
+}
+
+h2 {
+  font-size: 1.25em;
+}
+
+/* Layout */
+#wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header {
+  background: rgba(26, 26, 26, 0.95);
+  border-bottom: 1px solid var(--color-border);
+  padding: 2em 0;
+  position: relative;
+  z-index: 1;
+}
+
+header h1 {
+  margin: 0;
+}
+
+main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(275px, 1fr));
+  gap: 0;
+  padding: 0;
+  margin: 0;
+}
+
+footer {
+  background: rgba(26, 26, 26, 0.95);
+  border-top: 1px solid var(--color-border);
+  padding: 3em 2em;
+  margin-top: auto;
+}
+
+/* Gallery thumbnails */
+.thumb {
+  background: #2a2a2a;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+.thumb img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.thumb:hover {
+  z-index: 3;
+}
+
+/* Ensure images don't cause layout shift */
+img {
+  max-width: 100%;
+  height: auto;
+}
