@@ -8,6 +8,7 @@
     "build:css": "gulp build",
     "watch": "gulp sass:watch",
     "resize": "gulp resize",
+    "resize:full": "gulp resize:full",
     "serve": "jekyll serve",
     "dev": "npm run build:css && concurrently \"npm run watch\" \"npm run serve\"",
     "test": "echo \"Error: no test specified\" && exit 1"
