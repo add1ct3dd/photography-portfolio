@@ -99,16 +99,32 @@ class DialogLightbox {
     }
     showImage() {
         const link = this.images[this.currentImageIndex];
-        const fullImageUrl = link.href;
         const thumbImg = link.querySelector("img");
         const imgName = thumbImg?.dataset.name || "";
+        const baseName = imgName.replace(/\.[^.]+$/, '');
         const imageElement = this.dialog?.querySelector(".lightbox-image");
         const exifContainer = this.dialog?.querySelector(".lightbox-exif");
         if (imageElement && exifContainer) {
             exifContainer.innerHTML = '<p>Loading metadata...</p>';
             imageElement.style.opacity = "0";
-            imageElement.src = fullImageUrl;
+            imageElement.srcset = `
+        /images/fulls/avif/${baseName}-600w.avif 600w,
+        /images/fulls/webp/${baseName}-600w.webp 600w,
+        /images/fulls/${baseName}-600w.jpg 600w,
+        /images/fulls/avif/${baseName}-1200w.avif 1200w,
+        /images/fulls/webp/${baseName}-1200w.webp 1200w,
+        /images/fulls/${baseName}-1200w.jpg 1200w,
+        /images/fulls/avif/${baseName}-2400w.avif 2400w,
+        /images/fulls/webp/${baseName}-2400w.webp 2400w,
+        /images/fulls/${baseName}-2400w.jpg 2400w,
+        /images/fulls/avif/${baseName}-3440w.avif 3440w,
+        /images/fulls/webp/${baseName}-3440w.webp 3440w,
+        /images/fulls/${baseName}-3440w.jpg 3440w
+      `;
+            imageElement.sizes = "(max-width: 768px) 95vw, 90vw";
+            imageElement.src = `/images/fulls/${baseName}-3440w.jpg`;
             imageElement.alt = thumbImg?.alt || "Full size image";
+            imageElement.decoding = "async";
             imageElement.onload = () => {
                 this.adjustDialogSize(imageElement);
                 requestAnimationFrame(() => {
@@ -217,8 +233,34 @@ class DialogLightbox {
         setTimeout(() => {
             this.currentImageIndex = newIndex;
             this.showImage();
+            this.prefetchAdjacentImages();
             this.isTransitioning = false;
         }, 200);
+    }
+    prefetchAdjacentImages() {
+        const indicesToPrefetch = [];
+        if (this.currentImageIndex > 0) {
+            indicesToPrefetch.push(this.currentImageIndex - 1);
+        }
+        if (this.currentImageIndex < this.images.length - 1) {
+            indicesToPrefetch.push(this.currentImageIndex + 1);
+        }
+        if (this.currentImageIndex < this.images.length - 2) {
+            indicesToPrefetch.push(this.currentImageIndex + 2);
+        }
+        indicesToPrefetch.forEach((index) => {
+            const link = this.images[index];
+            const thumbImg = link.querySelector("img");
+            const imgName = thumbImg?.dataset.name || "";
+            const baseName = imgName.replace(/\.[^.]+$/, '');
+            const preloadLink = document.createElement("link");
+            preloadLink.rel = "prefetch";
+            preloadLink.as = "image";
+            preloadLink.href = `/images/fulls/webp/${baseName}-1200w.webp`;
+            if (!document.head.querySelector(`link[href="${preloadLink.href}"]`)) {
+                document.head.appendChild(preloadLink);
+            }
+        });
     }
     adjustDialogSize(img) {
         if (!this.dialog)

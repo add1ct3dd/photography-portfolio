@@ -22,41 +22,76 @@ gulp.task('delete', function () {
 
 gulp.task('resize-images', async function () {
     const sourceDir = 'images/source';
-    const fullsDir = 'images/fulls';
-    const thumbsDir = 'images/thumbs';
+    
+    // Define responsive breakpoints for photography portfolio
+    // Thumbnails: mobile, tablet, desktop
+    // Full images: mobile, tablet, desktop, ultra-high-res
+    const sizes = [
+        { name: 'thumbs', widths: [200, 400, 840], quality: { jpeg: 90, webp: 88, avif: 85 } },
+        { name: 'fulls', widths: [600, 1200, 2400, 3440], quality: { jpeg: 95, webp: 94, avif: 92 } }
+    ];
 
     // Ensure output directories exist
-    await fsPromises.mkdir(fullsDir, { recursive: true });
-    await fsPromises.mkdir(thumbsDir, { recursive: true });
+    for (const size of sizes) {
+        await fsPromises.mkdir(`images/${size.name}`, { recursive: true });
+        // Create format subdirectories
+        await fsPromises.mkdir(`images/${size.name}/webp`, { recursive: true });
+        await fsPromises.mkdir(`images/${size.name}/avif`, { recursive: true });
+    }
 
     // Get all image files from source directory
     const files = await fsPromises.readdir(sourceDir);
     const imageFiles = files.filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f));
 
+    const totalImages = imageFiles.length;
+    const totalFormats = 3; // JPEG, WebP, AVIF
+    const totalSizeVariants = sizes.reduce((sum, s) => sum + s.widths.length, 0); // 7 total (3+4)
+    const totalVariants = totalImages * totalFormats * totalSizeVariants;
+
+    console.log(`\n📸 Processing ${totalImages} images for responsive delivery...`);
+    console.log(`   Total variants to generate: ${totalVariants} (${totalImages} images × ${totalFormats} formats × ${totalSizeVariants} sizes)\n`);
+
+    let processedImages = 0;
+
     for (const file of imageFiles) {
         const inputPath = path.join(sourceDir, file);
         const baseName = path.parse(file).name;
+        processedImages++;
+
+        const progress = ((processedImages / totalImages) * 100).toFixed(1);
+        console.log(`[${processedImages}/${totalImages} - ${progress}%] Processing: ${baseName}`);
 
         try {
-            // Resize for fulls - maximum quality for photography portfolio (95 JPEG, 94 WebP, 90 AVIF)
-            await sharp(inputPath)
-                .resize(3440, null, { withoutEnlargement: true })
-                .withMetadata()
-                .jpeg({ quality: 95, progressive: true })
-                .toFile(path.join(fullsDir, `${baseName}.jpg`));
+            for (const sizeConfig of sizes) {
+                for (const width of sizeConfig.widths) {
+                    // JPEG - baseline format
+                    await sharp(inputPath)
+                        .resize(width, null, { withoutEnlargement: true })
+                        .withMetadata()
+                        .jpeg({ quality: sizeConfig.quality.jpeg, progressive: true })
+                        .toFile(path.join(`images/${sizeConfig.name}`, `${baseName}-${width}w.jpg`));
 
-            // Resize for thumbs - high quality (90 JPEG, 92 WebP, 88 AVIF)
-            await sharp(inputPath)
-                .resize(840, null, { withoutEnlargement: true })
-                .withMetadata()
-                .jpeg({ quality: 92, progressive: true })
-                .toFile(path.join(thumbsDir, `${baseName}.jpg`));
+                    // WebP - modern format (25-35% smaller than JPEG)
+                    await sharp(inputPath)
+                        .resize(width, null, { withoutEnlargement: true })
+                        .withMetadata()
+                        .webp({ quality: sizeConfig.quality.webp })
+                        .toFile(path.join(`images/${sizeConfig.name}/webp`, `${baseName}-${width}w.webp`));
 
-            console.log(`Generated: ${baseName}`);
+                    // AVIF - next-gen format (30-40% smaller than JPEG)
+                    await sharp(inputPath)
+                        .resize(width, null, { withoutEnlargement: true })
+                        .withMetadata()
+                        .avif({ quality: sizeConfig.quality.avif })
+                        .toFile(path.join(`images/${sizeConfig.name}/avif`, `${baseName}-${width}w.avif`));
+                }
+            }
+            console.log(`   ✓ Generated variants (3 sizes × 3 formats)\n`);
         } catch (err) {
-            console.error(`Error processing ${file}:`, err.message);
+            console.error(`   ✗ Error processing ${file}:`, err.message, `\n`);
         }
     }
+    console.log(`✅ Image generation complete! Generated ${totalVariants} variants from ${totalImages} sources.\n`);
 });
 
 // compile scss to css

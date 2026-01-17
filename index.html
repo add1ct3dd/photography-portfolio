@@ -18,12 +18,33 @@ layout: default
     <!-- Main Gallery -->
     <main id="main" data-exif='{{ site.exif }}' role="main" aria-label="Photography Gallery">
         {% for image in site.static_files reversed %}
-        {% if image.path contains 'fulls' and image.name contains '.jpg' %}
+        {% if image.path contains '/fulls/' and image.name contains '-3440w.jpg' %}
+        {% assign baseName = image.name | replace: '-3440w.jpg', '' %}
         <article class="thumb">
-            <a href="{{ site.baseurl }}{{ site.image_fulls_loc }}/{{ image.name }}" class="image"
-                aria-label="View full size image {{ image.name }}">
-                <img src="{{ site.baseurl }}{{ site.image_thumbs_loc }}/{{ image.name }}" alt="Photo: {{ image.name }}"
-                    data-name="{{ image.name }}" />
+            <a href="{{ site.baseurl }}/images/fulls/{{ baseName }}.jpg" class="image"
+                aria-label="View full size image {{ baseName }}.jpg">
+                <!-- Responsive image with lazy loading -->
+                <picture>
+                    <!-- AVIF format - best compression (30-40% smaller than JPEG) -->
+                    <source srcset="
+                            {{ site.baseurl }}/images/thumbs/avif/{{ baseName }}-200w.avif 200w,
+                            {{ site.baseurl }}/images/thumbs/avif/{{ baseName }}-400w.avif 400w,
+                            {{ site.baseurl }}/images/thumbs/avif/{{ baseName }}-840w.avif 840w
+                        " sizes="(max-width: 600px) 95vw, (max-width: 1024px) 50vw, 33vw" type="image/avif" />
+                    <!-- WebP format - modern compression (25-35% smaller than JPEG) -->
+                    <source srcset="
+                            {{ site.baseurl }}/images/thumbs/webp/{{ baseName }}-200w.webp 200w,
+                            {{ site.baseurl }}/images/thumbs/webp/{{ baseName }}-400w.webp 400w,
+                            {{ site.baseurl }}/images/thumbs/webp/{{ baseName }}-840w.webp 840w
+                        " sizes="(max-width: 600px) 95vw, (max-width: 1024px) 50vw, 33vw" type="image/webp" />
+                    <!-- JPEG fallback -->
+                    <img src="{{ site.baseurl }}/images/thumbs/{{ baseName }}-840w.jpg" srcset="
+                            {{ site.baseurl }}/images/thumbs/{{ baseName }}-200w.jpg 200w,
+                            {{ site.baseurl }}/images/thumbs/{{ baseName }}-400w.jpg 400w,
+                            {{ site.baseurl }}/images/thumbs/{{ baseName }}-840w.jpg 840w
+                        " sizes="(max-width: 600px) 95vw, (max-width: 1024px) 50vw, 33vw" alt="Photo: {{ baseName }}.jpg"
+                        data-name="{{ baseName }}.jpg" loading="lazy" decoding="async" />
+                </picture>
             </a>
         </article>
         {% endif %}
