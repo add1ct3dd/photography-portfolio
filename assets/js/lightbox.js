@@ -142,6 +142,7 @@ class DialogLightbox {
                 this.applyTransform(image);
             }, { passive: false });
             imageContainer.addEventListener("gestureend", () => {
+                this.lastScale = this.currentScale;
                 if (this.currentScale <= 1) {
                     this.resetZoom(image);
                 }
@@ -162,9 +163,10 @@ class DialogLightbox {
                         const tapY = e.changedTouches[0].clientY - rect.top;
                         const centerX = rect.width / 2;
                         const centerY = rect.height / 2;
-                        this.currentScale = 3;
-                        this.translateX = (centerX - tapX) * 2;
-                        this.translateY = (centerY - tapY) * 2;
+                        this.currentScale = this.maxZoom;
+                        this.lastScale = this.maxZoom;
+                        this.translateX = (centerX - tapX) * (this.maxZoom - 1);
+                        this.translateY = (centerY - tapY) * (this.maxZoom - 1);
                         this.applyTransform(image);
                     }
                 }
